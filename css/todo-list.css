@@ -1,0 +1,39 @@
+@import './todo-list-header.css';
+@import './todo-list-folder.css';
+@import './todo-list-items.css';
+@import './todo-list-editor.css';
+
+todo-header {
+  display: flex;
+  flex: 1;
+}
+
+.header {
+  border-bottom: 1px solid gray;
+  height: 10%;
+  display: flex;
+}
+
+.main {
+  display: flex;
+  height: 90%;
+}
+
+.main .folder {
+  background-color: #f4f4f4;
+  border-right: 1px solid lightgray;
+  flex: 1;
+  height: 100%;
+}
+
+.main .list {
+  flex: 1;
+  border-right: 1px solid lightgray;
+  height: 100%;
+}
+
+.main .editor {
+  background-color: #fffcf5;
+  flex: 4;
+  height: 100%;
+}

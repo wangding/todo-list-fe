@@ -1,0 +1,16 @@
+.folder .new {
+  width: 120px;
+  height: 30px;
+  background-color: white;
+  margin: 15px auto;
+  border: 1px solid lightgray;
+  border-radius: 15px;
+  display: flex;
+}
+
+.new span {
+  flex: 1;
+  text-align: center;
+  line-height: 30px;
+  cursor: pointer;
+}
