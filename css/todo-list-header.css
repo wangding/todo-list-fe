@@ -45,4 +45,9 @@
 
 .user a {
   text-decoration-line: none;
+  color: blue;
+}
+
+.user a:visited {
+  color: blue;
 }

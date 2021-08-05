@@ -13,13 +13,12 @@ function isLogin() {
 }
 
 function showLogin() {
-  customElements.define('login-box', LoginBox);
-
   let $body = $('body');
   $body.innerHTML = '<login-box></login-box>';
 }
 
 function defineWebComponents() {
+  customElements.define('login-box', LoginBox);
   customElements.define('todo-header', Header);
   customElements.define('todo-folder', Folder);
   customElements.define('todo-items', Items);
@@ -40,7 +39,6 @@ function genPageLayout() {
 }
 
 function showHome() {
-  defineWebComponents();
   genPageLayout();
 
   const $header = $('.header');
@@ -56,10 +54,41 @@ function showHome() {
   $editor.innerHTML = '<todo-editor></todo-editor>';
 }
 
-const app = {
-  isLogin,
-  showLogin,
-  showHome
+let isInitalized = false;  // App 是否被初始化，默认没有初始化
+
+function init() {
+  if(!isInitalized) {  // 保证 WebComponents 只初始化一次
+    defineWebComponents();
+    isInitalized = true;
+  }
+
+  if(location.hash !== '') location.hash = '';
+
+  window.onhashchange = () => {
+    //console.log(location.hash);
+    switch(location.hash) {
+      case '#/login':
+        showLogin();
+        break;
+
+      case '#/logout':
+        localStorage.removeItem('sid');
+        location.hash = '#/login';
+        break;
+
+      case '#/home':
+        showHome();
+        break;
+
+      default:
+        console.trace(`路由：${location.hash} 没有处理！`);
+        break;
+    }
+  };
+
+  location.hash = (isLogin()) ? '#/home' : '#/login';
 }
+
+const app = { init };
 
 export default app;

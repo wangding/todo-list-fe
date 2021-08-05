@@ -12,7 +12,7 @@ class Header extends HTMLElement {
       + '</div>'
       + '<div class="user">'
         + '<span class="username">王顶 |&nbsp; </span>'
-        + '<a class="exit" href="#">退出</a>'
+        + '<a class="exit" href="#/logout">退出</a>'
       + '</div>';
   }
 }

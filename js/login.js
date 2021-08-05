@@ -21,23 +21,24 @@ class LoginBox extends HTMLElement {
           $password = this.$('input[name="password"]');
 
     $btnLogin.onclick = async function() {
-      let userName = $userName.value,
+      let email = $userName.value,
           password = $password.value;
 
-      if(userName === '' || password === '') return;
+      if(email === '' || password === '') return;
 
-      console.log(userName, password);
-      //let rs = await app.axios.post(apiURL, { userName, password });
-      //rs = rs.data;
+      const apiURL = 'http://192.168.174.133:8080/api/users/login';
+      let rs = await axios.post(apiURL, { email, password });
+      rs = rs.data;
 
-      if(rs.code !== 0) {
+      if(rs.code !== 0) { // 登录失败
         alert(rs.msg);
-        return;
-      }
+      } else { // 登录成功
+        localStorage.setItem('sid', rs.data);
+        $userName.value = '';
+        $password.value = '';
 
-      sessionStorage.setItem('sid', rs.data);
-      $userName.value = '';
-      $password.value = '';
+        location.hash = '#/home';
+      }
     };
   }
 }
