@@ -1,6 +1,5 @@
-@import './login.css';
-@import './signup.css';
 @import './normalize.css';
+@import './login.css';
 @import './todo-list.css';
 
 html, body {

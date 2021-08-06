@@ -4,36 +4,39 @@
 @import './todo-list-editor.css';
 
 todo-header {
-  display: flex;
-  flex: 1;
-}
-
-.header {
   border-bottom: 1px solid gray;
   height: 10%;
-  display: flex;
+  display: block;
+  position: relative;
 }
 
-.main {
-  display: flex;
+main {
+  width: 100%;
   height: 90%;
+  display: flex;
 }
 
-.main .folder {
+todo-folder, todo-items {
+  flex: 0 0 180px;
+  display: inline-block;
+  border-right: 1px solid lightgray;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+todo-folder {
   background-color: #f4f4f4;
-  border-right: 1px solid lightgray;
-  flex: 1;
-  height: 100%;
 }
 
-.main .list {
-  flex: 1;
-  border-right: 1px solid lightgray;
-  height: 100%;
+todo-items {
+  flex: 0 0 200px;
 }
 
-.main .editor {
+todo-editor {
+  flex: 1;
+  display: inline-block;
+  box-sizing: border-box;
   background-color: #fffcf5;
-  flex: 4;
+  width: 69%;
   height: 100%;
 }

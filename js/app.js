@@ -32,30 +32,16 @@ function defineWebComponents() {
   customElements.define('todo-editor', Editor);
 }
 
-function genPageLayout() {
-  $body.innerHTML = ''
-    + '<div class="header"></div>'
-    + '<div class="main">'
-      + '<div class="folder"></div>'
-      + '<div class="list"></div>'
-      + '<div class="editor"></div>'
-    + '</div>';
-}
-
 function showHome() {
-  genPageLayout();
+  $body.innerHTML = '';
+  $body.insertAdjacentHTML('beforeend','<todo-header></todo-header>');
+  $body.insertAdjacentHTML('beforeend', '<main></main>');
 
-  const $header = $('.header');
-  $header.innerHTML = '<todo-header></todo-header>';
+  const $main = $body.querySelector('main');
 
-  const $folder = $('.folder');
-  $folder.innerHTML = '<todo-folder></todo-folder>';
-
-  const $list = $('.list');
-  $list.innerHTML = '<todo-items></todo-items>';
-
-  const $editor = $('.editor');
-  $editor.innerHTML = '<todo-editor></todo-editor>';
+  $main.insertAdjacentHTML('beforeend', '<todo-folder></todo-folder>');
+  $main.insertAdjacentHTML('beforeend', '<todo-items></todo-items>');
+  $main.insertAdjacentHTML('beforeend', '<todo-editor></todo-editor>');
 }
 
 function registRouter() {

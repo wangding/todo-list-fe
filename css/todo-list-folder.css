@@ -1,4 +1,4 @@
-.folder .new {
+todo-folder .new {
   width: 120px;
   height: 30px;
   background-color: white;
@@ -43,7 +43,7 @@
   left: 0;
 }
 
-.menu img.add-folder {
+.menu .add-folder {
   position: absolute;
   right: 0;
 }

@@ -1,11 +1,23 @@
-.header div {
-  display: inline-block;
+todo-header .logo, .search, .user {
   display: flex;
   align-items: center;
 }
 
-.header .logo {
-  flex: 1;
+todo-header .logo {
+  position: absolute;
+  top: 10px;
+}
+
+todo-header .search {
+  position: absolute;
+  left: 300px;
+  top: 25px;
+}
+
+todo-header .user {
+  position: absolute;
+  right: 20px;
+  top: 25px;
 }
 
 .logo img {
@@ -17,10 +29,6 @@
   padding-left: 10px;
   font-family: Microsoft YaHei;
   font-size: 18px;
-}
-
-.header .search {
-  flex: 2;
 }
 
 .search input {
@@ -38,20 +46,11 @@
   width: 45px;
 }
 
-.header .user {
-  width: 100px;
-  flex: 0 0 200px;
-}
-
 .user .split {
   padding: 0 10px;
 }
 
-.user a {
+.user .exit, .exit:visited {
   text-decoration-line: none;
-  color: blue;
-}
-
-.user a:visited {
   color: blue;
 }

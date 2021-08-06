@@ -3,18 +3,16 @@ class SignupBox extends HTMLElement {
     super();
 
     this.innerHTML = ''
-      + '<div class="app-signup">'
-        + '<h1>注册新用户</h1>'
-        + '<form>'
-          + '<label>邮箱：</label>'
-          + '<input name="userName" type="email" autofocus required><br>'
-          + '<label>密码：</label>'
-          + '<input name="password" type="password" required><br>'
-          + '<label>确认：</label>'
-          + '<input name="pwd-repeat" type="password" required><br>'
-          + '<input type="submit" value="注 册">'
-        + '</form>'
-      + '</div>';
+      + '<h1 class="login-title">注册新用户</h1>'
+      + '<form class="login-form">'
+        + '<label class="login-label">邮箱：</label>'
+        + '<input class="login-input" name="userName" type="email" autofocus required><br>'
+        + '<label class="login-label">密码：</label>'
+        + '<input class="login-input" name="password" type="password" required><br>'
+        + '<label class="login-label">确认：</label>'
+        + '<input class="login-input" name="pwd-repeat" type="password" required><br>'
+        + '<input class="login-submit" type="submit" value="注 册">'
+      + '</form>';
 
     this.$ = this.querySelector;
 

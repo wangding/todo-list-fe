@@ -1,41 +1,50 @@
-.app-login {
+login-box, signup-box {
+  display: block;
   position: relative;
   top: 200px;
-  width: 420px;
+  width: 520px;
   border: solid 1px #c2c2c2;
   margin: 0 auto;
   background: white;
-  padding-bottom: 30px;
-  padding-left: 140px;
 }
 
-.app-login h1 {
-  margin-left: 125px;
-  margin-top: 30px;
-  margin-bottom: 30px;
+signup-box {
+  padding: 0 50px 30px 50px;
+}
+
+login-box {
+  padding-bottom: 30px;
+}
+
+.login-title {
+  text-align: center;
+  margin: 30px 0;
   font-weight: 400;
 }
 
-.app-login label {
+.login-form {
+  margin-left: 100px;
+}
+
+.login-label {
   height: 20px;
   padding: 9px 15px 9px 0;
 }
 
-.app-login input {
+.login-input {
   height: 36px;
   width: 210px;
-  margin: 5px 0;
+  margin: 10px 0;
   outline: none;
   padding-left: 10px;
   border: 1px solid #d2d2d2;
 }
 
-.app-login input[type="submit"] {
+.login-submit {
   background: #009688;
   color: white;
   width: 100px;
   height: 38px;
   padding: 0;
-  margin-left: 55px;
-  margin-right: 10px;
+  margin: 15px 10px 0 55px;
 }
