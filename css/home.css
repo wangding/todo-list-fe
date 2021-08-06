@@ -1,7 +1,7 @@
-@import './todo-list-header.css';
-@import './todo-list-folder.css';
-@import './todo-list-items.css';
-@import './todo-list-editor.css';
+@import './header.css';
+@import './folder.css';
+@import './items.css';
+@import './editor.css';
 
 todo-header {
   border-bottom: 1px solid gray;

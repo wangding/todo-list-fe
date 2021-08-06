@@ -1,6 +1,6 @@
 @import './normalize.css';
 @import './login.css';
-@import './todo-list.css';
+@import './home.css';
 
 html, body {
   width: 100%;

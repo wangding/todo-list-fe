@@ -10,6 +10,8 @@ const q = document.querySelector,
 
 const $body = $('body');
 
+const app = {};
+
 function isLogin() {
   const sid = localStorage.getItem('sid');
   return !(sid === null);
@@ -42,6 +44,11 @@ function showHome() {
   $main.insertAdjacentHTML('beforeend', '<todo-folder></todo-folder>');
   $main.insertAdjacentHTML('beforeend', '<todo-items></todo-items>');
   $main.insertAdjacentHTML('beforeend', '<todo-editor></todo-editor>');
+
+  app.$header = $('todo-header');
+  app.$folder = $('todo-folder');
+  app.$items  = $('todo-items');
+  app.$editor = $('todo-editor');
 }
 
 function registRouter() {
@@ -75,7 +82,7 @@ function registRouter() {
 
 let isInitalized = false;  // App 是否被初始化，默认没有初始化
 
-function init() {
+app.init = () => {
   if(!isInitalized) {  // 确保 WebComponents 只定义一次
     defineWebComponents();
     isInitalized = true;
@@ -84,8 +91,6 @@ function init() {
   registRouter();
 
   location.hash = (isLogin()) ? '#/home' : '#/login';
-}
-
-const app = { init };
+};
 
 export default app;

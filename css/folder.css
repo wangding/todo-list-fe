@@ -34,6 +34,10 @@ todo-folder .new {
   position: relative;
 }
 
+.menu li.actived {
+  color: blue;
+}
+
 .menu li:hover {
   background-color: white;
 }
