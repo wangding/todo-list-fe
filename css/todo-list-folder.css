@@ -6,11 +6,44 @@
   border: 1px solid lightgray;
   border-radius: 15px;
   display: flex;
+  cursor: pointer;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.new img {
+  margin: 5px 5px 0 15px;
 }
 
 .new span {
-  flex: 1;
   text-align: center;
   line-height: 30px;
+}
+
+.menu li {
+  padding-left: 25px;
+  align-items: center;
+  list-style: none;
+  height: 40px;
+  display: flex;
   cursor: pointer;
+  position: relative;
+}
+
+.menu li:hover {
+  background-color: white;
+}
+
+.menu .expand {
+  position: absolute;
+  left: 0;
+}
+
+.menu img.add-folder {
+  position: absolute;
+  right: 0;
 }

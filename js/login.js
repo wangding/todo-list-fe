@@ -7,24 +7,24 @@ class LoginBox extends HTMLElement {
         + '<h1>登录</h1>'
         + '<form>'
           + '<label>邮箱：</label>'
-          + '<input name="userName" type="text" autofocus><br>'
+          + '<input name="userName" type="email" autofocus required><br>'
           + '<label>密码：</label>'
-          + '<input name="password" type="password"><br>'
-          + '<input type="button" value="登 录">'
+          + '<input name="password" type="password" required><br>'
+          + '<input type="submit" value="登 录"> <a href="#/signup">注册新用户</a>'
         + '</form>'
       + '</div>';
 
     this.$ = this.querySelector;
 
-    const $btnLogin = this.$('input[type="button"]'),
+    const $form = this.$('form'),
           $userName = this.$('input[name="userName"]'),
           $password = this.$('input[name="password"]');
 
-    $btnLogin.onclick = async function() {
-      let email = $userName.value,
-          password = $password.value;
+    $form.onsubmit = async function(e) {
+      const email = $userName.value,
+            password = $password.value;
 
-      if(email === '' || password === '') return;
+      e.preventDefault();
 
       const apiURL = 'http://192.168.174.133:8080/api/users/login';
       let rs = await axios.post(apiURL, { email, password });
@@ -34,6 +34,8 @@ class LoginBox extends HTMLElement {
         alert(rs.msg);
       } else { // 登录成功
         localStorage.setItem('sid', rs.data);
+        localStorage.setItem('email', email);
+
         $userName.value = '';
         $password.value = '';
 

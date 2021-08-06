@@ -1,4 +1,4 @@
-.app-login {
+.app-signup {
   position: relative;
   top: 200px;
   width: 420px;
@@ -9,19 +9,19 @@
   padding-left: 140px;
 }
 
-.app-login h1 {
-  margin-left: 125px;
+.app-signup h1 {
+  margin-left: 95px;
   margin-top: 30px;
   margin-bottom: 30px;
   font-weight: 400;
 }
 
-.app-login label {
+.app-signup label {
   height: 20px;
   padding: 9px 15px 9px 0;
 }
 
-.app-login input {
+.app-signup input {
   height: 36px;
   width: 210px;
   margin: 5px 0;
@@ -30,7 +30,7 @@
   border: 1px solid #d2d2d2;
 }
 
-.app-login input[type="submit"] {
+.app-signup input[type="submit"] {
   background: #009688;
   color: white;
   width: 100px;

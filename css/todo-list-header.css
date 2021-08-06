@@ -40,7 +40,11 @@
 
 .header .user {
   width: 100px;
-  flex: 0 0 100px;
+  flex: 0 0 200px;
+}
+
+.user .split {
+  padding: 0 10px;
 }
 
 .user a {

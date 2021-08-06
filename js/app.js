@@ -3,9 +3,12 @@ import Header from './header.js';
 import Folder from './folder.js';
 import Items from './items.js';
 import Editor from './editor.js';
+import SignupBox from './signup.js';
 
 const q = document.querySelector,
       $ = q.bind(document);
+
+const $body = $('body');
 
 function isLogin() {
   const sid = localStorage.getItem('sid');
@@ -13,11 +16,15 @@ function isLogin() {
 }
 
 function showLogin() {
-  let $body = $('body');
   $body.innerHTML = '<login-box></login-box>';
 }
 
+function showSignup() {
+  $body.innerHTML = '<signup-box></signup-box>';
+}
+
 function defineWebComponents() {
+  customElements.define('signup-box', SignupBox);
   customElements.define('login-box', LoginBox);
   customElements.define('todo-header', Header);
   customElements.define('todo-folder', Folder);
@@ -26,16 +33,13 @@ function defineWebComponents() {
 }
 
 function genPageLayout() {
-  const layout = ''
+  $body.innerHTML = ''
     + '<div class="header"></div>'
     + '<div class="main">'
       + '<div class="folder"></div>'
       + '<div class="list"></div>'
       + '<div class="editor"></div>'
     + '</div>';
-
-  let $body = $('body');
-  $body.innerHTML = layout;
 }
 
 function showHome() {
@@ -54,18 +58,10 @@ function showHome() {
   $editor.innerHTML = '<todo-editor></todo-editor>';
 }
 
-let isInitalized = false;  // App 是否被初始化，默认没有初始化
-
-function init() {
-  if(!isInitalized) {  // 保证 WebComponents 只初始化一次
-    defineWebComponents();
-    isInitalized = true;
-  }
-
-  if(location.hash !== '') location.hash = '';
+function registRouter() {
+  location.hash = '';      // 初始化 hash 为空，确保后续的路由能正常工作
 
   window.onhashchange = () => {
-    //console.log(location.hash);
     switch(location.hash) {
       case '#/login':
         showLogin();
@@ -74,6 +70,10 @@ function init() {
       case '#/logout':
         localStorage.removeItem('sid');
         location.hash = '#/login';
+        break;
+
+      case '#/signup':
+        showSignup();
         break;
 
       case '#/home':
@@ -85,6 +85,17 @@ function init() {
         break;
     }
   };
+}
+
+let isInitalized = false;  // App 是否被初始化，默认没有初始化
+
+function init() {
+  if(!isInitalized) {  // 确保 WebComponents 只定义一次
+    defineWebComponents();
+    isInitalized = true;
+  }
+
+  registRouter();
 
   location.hash = (isLogin()) ? '#/home' : '#/login';
 }

@@ -11,9 +11,14 @@ class Header extends HTMLElement {
         + '<input type="text" placeholder="搜索全部待办事项"><button>搜索</button>'
       + '</div>'
       + '<div class="user">'
-        + '<span class="username">王顶 |&nbsp; </span>'
+        + '<span class="username">王顶</span><span class="split">|</span>'
         + '<a class="exit" href="#/logout">退出</a>'
       + '</div>';
+
+    this.$ = this.querySelector;
+
+    const $username = this.$('.username');
+    $username.innerText = localStorage.getItem('email');
   }
 }
 
