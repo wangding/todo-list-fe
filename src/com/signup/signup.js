@@ -40,13 +40,13 @@ class SignupBox extends HTMLElement {
       if(rs.code !== 0) { // 注册失败
         alert(rs.msg);
       } else { // 注册成功
-        alert('注册成功，点击"确定"按钮，进入登录页面！')
-
         $userName.value = '';
         $password.value = '';
         $pwdRepeat.value = '';
 
-        location.hash = '#/login';
+        const evt = new CustomEvent('signupOK', { bubbles: true });
+
+        this.dispatchEvent(evt);
       }
     };
   }

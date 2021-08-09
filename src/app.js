@@ -1,9 +1,13 @@
-import LoginBox from './login.js';
-import Header from './header.js';
-import Folder from './folder.js';
-import Items from './items.js';
-import Editor from './editor.js';
-import SignupBox from './signup.js';
+import LoginBox from './com/login/login.js';
+import SignupBox from './com/signup/signup.js';
+
+import Header from './com/header/header.js';
+import Folder from './com/folder/folder.js';
+import Items from './com/items/items.js';
+import Editor from './com/editor/editor.js';
+
+import eventHandlers from './event-handlers.js';
+import data from './data.js';
 
 const q = document.querySelector,
       $ = q.bind(document);
@@ -12,26 +16,34 @@ const $body = $('body');
 
 const app = {};
 
-function isLogin() {
-  const sid = localStorage.getItem('sid');
-  return !(sid === null);
+async function isLogin() {
+  if(data.sid === null) return false;
+
+  // 判断 sid 是否过期
+  try{
+    await axios.get('http://192.168.174.133:8080/api/tasks', {
+      headers: { 'Authorization': 'Bearer '+ data.sid }
+    });
+    return true;
+  } catch(e) {
+    return false;
+  }
 }
 
 function showLogin() {
   $body.innerHTML = '<login-box></login-box>';
+  $('login-box').addEventListener('loginOK', e => {
+    data.init(e.detail.sid, e.detail.email);
+    location.hash = '#/home';
+  });
 }
 
 function showSignup() {
   $body.innerHTML = '<signup-box></signup-box>';
-}
-
-function defineWebComponents() {
-  customElements.define('signup-box', SignupBox);
-  customElements.define('login-box', LoginBox);
-  customElements.define('todo-header', Header);
-  customElements.define('todo-folder', Folder);
-  customElements.define('todo-items', Items);
-  customElements.define('todo-editor', Editor);
+  $('signup-box').addEventListener('signupOK', () => {
+    alert('注册成功，点击"确定"按钮，进入登录页面！')
+    location.hash = '#/login';
+  });
 }
 
 function showHome() {
@@ -45,10 +57,23 @@ function showHome() {
   $main.insertAdjacentHTML('beforeend', '<todo-items></todo-items>');
   $main.insertAdjacentHTML('beforeend', '<todo-editor></todo-editor>');
 
-  app.$header = $('todo-header');
-  app.$folder = $('todo-folder');
-  app.$items  = $('todo-items');
-  app.$editor = $('todo-editor');
+  window.$header = $('todo-header');
+  window.$folder = $('todo-folder');
+  window.$items  = $('todo-items');
+  window.$editor = $('todo-editor');
+
+  $header.setEmail(data.email);
+
+  $folder.setEventHandlers(eventHandlers);
+}
+
+function defineWebComponents() {
+  customElements.define('signup-box', SignupBox);
+  customElements.define('login-box', LoginBox);
+  customElements.define('todo-header', Header);
+  customElements.define('todo-folder', Folder);
+  customElements.define('todo-items', Items);
+  customElements.define('todo-editor', Editor);
 }
 
 function registRouter() {
@@ -61,7 +86,7 @@ function registRouter() {
         break;
 
       case '#/logout':
-        localStorage.removeItem('sid');
+        data.removeSid();
         location.hash = '#/login';
         break;
 
@@ -83,6 +108,8 @@ function registRouter() {
 let isInitalized = false;  // App 是否被初始化，默认没有初始化
 
 app.init = () => {
+  window.data = data;
+
   if(!isInitalized) {  // 确保 WebComponents 只定义一次
     defineWebComponents();
     isInitalized = true;

@@ -1,9 +1,10 @@
-@import './header.css';
-@import './folder.css';
-@import './items.css';
-@import './editor.css';
+@import '../com/header/header.css';
+@import '../com/folder/folder.css';
+@import '../com/items/items.css';
+@import '../com/editor/editor.css';
 
 todo-header {
+  box-sizing: border-box;
   border-bottom: 1px solid gray;
   height: 10%;
   display: block;

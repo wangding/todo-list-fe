@@ -1,5 +1,5 @@
 @import './normalize.css';
-@import './login.css';
+@import '../com/login/login.css';
 @import './home.css';
 
 html, body {

@@ -4,7 +4,7 @@ class Header extends HTMLElement {
 
     this.innerHTML = ''
       + '<div class="logo">'
-        + '<img src="../images/cloud.svg">'
+        + '<img src="./src/com/header/cloud.svg">'
         + '<span class="app-title">云待办事项</span>'
       + '</div>'
       + '<div class="search">'
@@ -16,9 +16,12 @@ class Header extends HTMLElement {
       + '</div>';
 
     this.$ = this.querySelector;
+  }
 
+  setEmail(email) {
     const $username = this.$('.username');
-    $username.innerText = localStorage.getItem('email');
+    $username.innerText = email;
+
   }
 }
 

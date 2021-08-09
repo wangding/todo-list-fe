@@ -31,13 +31,15 @@ class LoginBox extends HTMLElement {
       if(rs.code !== 0) { // 登录失败
         alert(rs.msg);
       } else { // 登录成功
-        localStorage.setItem('sid', rs.data);
-        localStorage.setItem('email', email);
-
         $userName.value = '';
         $password.value = '';
 
-        location.hash = '#/home';
+        const evt = new CustomEvent('loginOK', { 'detail': {
+          'sid': rs.data,
+          'email': email
+        }, bubbles: true });
+
+        this.dispatchEvent(evt);
       }
     };
   }
