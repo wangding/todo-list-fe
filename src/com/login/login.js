@@ -35,7 +35,7 @@ class LoginBox extends HTMLElement {
         $password.value = '';
 
         const evt = new CustomEvent('loginOK', { 'detail': {
-          'sid': rs.data,
+          'jwt': rs.data,
           'email': email
         }, bubbles: true });
 

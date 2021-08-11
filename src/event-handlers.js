@@ -48,13 +48,37 @@ function finding() {
   $editor.show(data.searchedTasks[0]);
 }
 
+function xFolder(id) {
+  console.log('x-folder event handler');
+
+  const tasks = data.getTasksByFolder(id);
+  $items.show(tasks);
+  $editor.show(tasks[0]);
+}
+
+async function addFolder(name) {
+  return await data.addFolder(name);
+}
+
+async function renameFolder(id, name) {
+  await data.renameFolder(Number(id), name);
+}
+
+async function deleteFolder(id) {
+  await data.deleteFolder(Number(id));
+}
+
 const eventHandlers = {
   'addTask':         addTask,
   'menu-all-tasks':  allTasks,
   'menu-no-class':   noClass,
   'menu-my-folders': myFolder,
   'menu-trash':      trash,
-  'menu-finding':    finding
+  'menu-finding':    finding,
+  'x-folder':        xFolder,
+  'addFolder':       addFolder,
+  'deleteFolder':    deleteFolder,
+  'renameFolder':    renameFolder
 };
 
 export default eventHandlers;

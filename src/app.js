@@ -17,23 +17,21 @@ const $body = $('body');
 const app = {};
 
 async function isLogin() {
-  if(data.sid === null) return false;
+  if(data.jwt === null) return false;
 
-  // 判断 sid 是否过期
-  try{
-    await axios.get('http://192.168.174.133:8080/api/tasks', {
-      headers: { 'Authorization': 'Bearer '+ data.sid }
-    });
-    return true;
-  } catch(e) {
-    return false;
-  }
+  // 判断 jwt 是否过期
+  const apiUrl = 'http://192.168.174.133:8080/api/tasks';
+  const res = await axios.get(apiUrl, {
+    headers: { 'Authorization': 'Bearer '+ data.jwt }
+  });
+
+  return (res.data.code === 0);
 }
 
 function showLogin() {
   $body.innerHTML = '<login-box></login-box>';
-  $('login-box').addEventListener('loginOK', e => {
-    data.init(e.detail.sid, e.detail.email);
+  $('login-box').addEventListener('loginOK', async (e) => {
+    await data.init(e.detail.jwt, e.detail.email);
     location.hash = '#/home';
   });
 }
@@ -65,6 +63,7 @@ function showHome() {
   $header.setEmail(data.email);
 
   $folder.setEventHandlers(eventHandlers);
+  $folder.setFolders(data.folders);
 }
 
 function defineWebComponents() {
@@ -86,7 +85,7 @@ function registRouter() {
         break;
 
       case '#/logout':
-        data.removeSid();
+        data.remove();
         location.hash = '#/login';
         break;
 
@@ -107,7 +106,7 @@ function registRouter() {
 
 let isInitalized = false;  // App 是否被初始化，默认没有初始化
 
-app.init = () => {
+app.init = async () => {
   window.data = data;
 
   if(!isInitalized) {  // 确保 WebComponents 只定义一次
@@ -117,7 +116,7 @@ app.init = () => {
 
   registRouter();
 
-  location.hash = (isLogin()) ? '#/home' : '#/login';
+  location.hash = (await isLogin()) ? '#/home' : '#/login';
 };
 
 export default app;

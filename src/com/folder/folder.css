@@ -34,8 +34,9 @@ todo-folder .new {
   position: relative;
 }
 
-.menu li.actived {
+.menu li.active {
   color: blue;
+  background-color: #eee;
 }
 
 .menu li:hover {
@@ -44,10 +45,49 @@ todo-folder .new {
 
 .menu .expand {
   position: absolute;
-  left: 0;
+  left: 0px;
 }
 
 .menu .add-folder {
   position: absolute;
   right: 0;
+}
+
+.menu .menu img.icon {
+  margin-left: 30px;
+}
+
+.hide {
+  display: none;
+}
+
+.menu .menu li:hover {
+  background-color: white;
+  background: url("arr-down.svg") no-repeat, white;
+  background-size: 20px 20px;
+  background-position: 165px;
+}
+
+.menu .folder-menu-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: 4px;
+  top: 9px;
+  display: none;
+  background-color: #a2a2a223;
+  z-index: 5;
+  border-radius: 10px;
+}
+
+.menu .menu li:hover > .folder-menu-handle {
+  display: block;
+}
+
+.folder-menu {
+  background-color: #f6f6f6;
+  border: 1px solid gray;
+  width: 150px;
+  list-style: none;
+  position: absolute;
 }

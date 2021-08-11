@@ -17,20 +17,20 @@ main {
   display: flex;
 }
 
-todo-folder, todo-items {
-  flex: 0 0 180px;
-  display: inline-block;
-  border-right: 1px solid lightgray;
-  height: 100%;
-  box-sizing: border-box;
-}
-
 todo-folder {
+  flex: 0 0 190px;
   background-color: #f4f4f4;
 }
 
 todo-items {
-  flex: 0 0 200px;
+  flex: 0 0 300px;
+}
+
+todo-folder, todo-items {
+  display: inline-block;
+  border-right: 1px solid lightgray;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 todo-editor {
