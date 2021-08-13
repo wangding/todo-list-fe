@@ -64,6 +64,7 @@ function showHome() {
 
   $folder.setEventHandlers(eventHandlers);
   $folder.setFolders(data.folders);
+  $items.show(data.allTasks);
 }
 
 function defineWebComponents() {

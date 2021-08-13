@@ -1,0 +1,70 @@
+todo-items .header {
+  box-sizing: border-box;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #d0d0d0;
+  position: relative;
+  font-size: 10px;
+}
+
+.header > .select-all {
+  position: absolute;
+  left: 10px;
+}
+
+.header > span:hover + input {
+  display: block;
+}
+
+.header > span {
+  padding-left: 30px;
+}
+
+.header label {
+  position: absolute;
+  right: 20px;
+}
+
+.header .orderby {
+  width: 95px;
+  outline: none;
+  border: none;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+ul.items li {
+  box-sizing: border-box;
+  height: 80px;
+  border-bottom: 1px solid #d0d0d0;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 30px;
+  position: relative;
+  cursor: pointer;
+}
+
+ul.items li.active {
+  background-color: #f4f4f4;
+}
+
+ul.items li .select-item {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+ul.items li p {
+  height: 24px;
+  cursor: pointer;
+}
+
+p.update-time {
+  font-size: 8px;
+  cursor: pointer;
+}
+
+ul.items li:hover > input[type="checkbox"] {
+  display: block;
+}
