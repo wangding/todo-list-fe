@@ -1,3 +1,5 @@
+import { baseUrl } from '../../config.js';
+
 class LoginBox extends HTMLElement {
   constructor() {
     super();
@@ -24,8 +26,7 @@ class LoginBox extends HTMLElement {
 
       e.preventDefault();
 
-      const apiURL = 'http://192.168.174.133:8080/api/users/login';
-      let rs = await axios.post(apiURL, { email, password });
+      let rs = await axios.post(baseUrl + '/users/login', { email, password });
       rs = rs.data;
 
       if(rs.code !== 0) { // 登录失败

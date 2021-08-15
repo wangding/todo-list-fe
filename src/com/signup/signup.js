@@ -1,3 +1,5 @@
+import { baseUrl } from '../../config.js';
+
 class SignupBox extends HTMLElement {
   constructor() {
     super();
@@ -33,8 +35,7 @@ class SignupBox extends HTMLElement {
         return;
       }
 
-      const apiURL = 'http://192.168.174.133:8080/api/users/signup';
-      let rs = await axios.post(apiURL, { email, password });
+      let rs = await axios.post(baseUrl + '/users/signup', { email, password });
       rs = rs.data;
 
       if(rs.code !== 0) { // 注册失败

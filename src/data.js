@@ -1,3 +1,5 @@
+import { baseUrl } from './config.js'
+
 class Data {
   constructor() {}
 
@@ -5,24 +7,21 @@ class Data {
     localStorage.setItem('jwt', jwt);
     localStorage.setItem('email', email);
 
-    let apiUrl = 'http://192.168.174.133:8080/api/tasks';
-    let res = await axios.get(apiUrl, {
+    let res = await axios.get(baseUrl + '/tasks', {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
     res = res.data;
     localStorage.setItem('allTasks', JSON.stringify(res.data));
 
-    apiUrl = 'http://192.168.174.133:8080/api/tasks/noclass';
-    res = await axios.get(apiUrl, {
+    res = await axios.get(baseUrl + '/tasks/noclass', {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
     res = res.data;
     localStorage.setItem('noClassTasks', JSON.stringify(res.data));
 
-    apiUrl = 'http://192.168.174.133:8080/api/folders';
-    res = await axios.get(apiUrl, {
+    res = await axios.get(baseUrl + '/folders', {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
@@ -68,8 +67,7 @@ class Data {
   }
 
   async addFolder(name) {
-    const apiUrl = 'http://192.168.174.133:8080/api/folders';
-    let res = await axios.post(apiUrl, { item: name }, {
+    let res = await axios.post(baseUrl + '/folders', { item: name }, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
@@ -86,8 +84,7 @@ class Data {
   }
 
   async renameFolder(id, name) {
-    const apiUrl = 'http://192.168.174.133:8080/api/folders/' + id;
-    await axios.put(apiUrl, { item: name }, {
+    await axios.put(baseUrl + `/folders/${id}`, { item: name }, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
@@ -103,8 +100,7 @@ class Data {
   }
 
   async deleteFolder(id) {
-    const apiUrl = 'http://192.168.174.133:8080/api/folders/' + id;
-    await axios.delete(apiUrl, {
+    await axios.delete(baseUrl + `/folders/${id}`, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 

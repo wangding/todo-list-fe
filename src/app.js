@@ -8,6 +8,7 @@ import Editor from './com/editor/editor.js';
 
 import eventHandlers from './event-handlers.js';
 import data from './data.js';
+import { baseUrl } from './config.js';
 
 const q = document.querySelector,
       $ = q.bind(document);
@@ -20,8 +21,7 @@ async function isLogin() {
   if(data.jwt === null) return false;
 
   // 判断 jwt 是否过期
-  const apiUrl = 'http://192.168.174.133:8080/api/tasks';
-  const res = await axios.get(apiUrl, {
+  const res = await axios.get(baseUrl + '/tasks', {
     headers: { 'Authorization': 'Bearer '+ data.jwt }
   });
 
