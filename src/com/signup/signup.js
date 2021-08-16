@@ -1,32 +1,19 @@
-import { baseUrl } from '../../config.js';
-
 class SignupBox extends HTMLElement {
   constructor() {
     super();
 
-    this.innerHTML = ''
-      + '<h1 class="login-title">注册新用户</h1>'
-      + '<form class="login-form">'
-        + '<label class="login-label">邮箱：</label>'
-        + '<input class="login-input" name="userName" type="email" autofocus required><br>'
-        + '<label class="login-label">密码：</label>'
-        + '<input class="login-input" name="password" type="password" required><br>'
-        + '<label class="login-label">确认：</label>'
-        + '<input class="login-input" name="pwd-repeat" type="password" required><br>'
-        + '<input class="login-submit" type="submit" value="注 册">'
-      + '</form>';
-
     this.$ = this.querySelector;
+    this.innerHTML = this.#html;
 
     const $form = this.$('form'),
           $userName = this.$('input[name="userName"]'),
           $password = this.$('input[name="password"]'),
           $pwdRepeat = this.$('input[name="pwd-repeat"]');
 
-    $form.onsubmit = async function(e) {
-      let email = $userName.value,
-          password = $password.value,
-          pwdRepeat = $pwdRepeat.value;
+    $form.onsubmit = async (e) => {
+      const email = $userName.value,
+            password = $password.value,
+            pwdRepeat = $pwdRepeat.value;
 
       e.preventDefault();
 
@@ -35,22 +22,29 @@ class SignupBox extends HTMLElement {
         return;
       }
 
-      let rs = await axios.post(baseUrl + '/users/signup', { email, password });
-      rs = rs.data;
+      $userName.value = '';
+      $password.value = '';
+      $pwdRepeat.value = '';
 
-      if(rs.code !== 0) { // 注册失败
-        alert(rs.msg);
-      } else { // 注册成功
-        $userName.value = '';
-        $password.value = '';
-        $pwdRepeat.value = '';
-
-        const evt = new CustomEvent('signupOK', { bubbles: true });
-
-        this.dispatchEvent(evt);
-      }
+      const evt = new CustomEvent('signup', {
+        detail: { email, password },
+        bubbles: true
+      });
+      this.dispatchEvent(evt);
     };
   }
+
+  #html = ''
+    + '<h1 class="login-title">注册新用户</h1>'
+    + '<form class="login-form">'
+      + '<label class="login-label">邮箱：</label>'
+      + '<input class="login-input" name="userName" type="email" autofocus required><br>'
+      + '<label class="login-label">密码：</label>'
+      + '<input class="login-input" name="password" type="password" required><br>'
+      + '<label class="login-label">确认：</label>'
+      + '<input class="login-input" name="pwd-repeat" type="password" required><br>'
+      + '<input class="login-submit" type="submit" value="注 册">'
+    + '</form>'
 }
 
 export default SignupBox;

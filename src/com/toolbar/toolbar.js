@@ -7,22 +7,23 @@ class Toolbar extends HTMLElement {
     this.#$count = this.$('span.count');
 
     this.$('img.exit').onclick = () => {
-      this.#eventHandles['onexit']();
+      const evt = new CustomEvent('exit', { bubbles: true });
+      this.dispatchEvent(evt);
     };
 
     this.$('img.move').onclick = () => {
-      this.#eventHandles['onmove']();
+      const evt = new CustomEvent('move', { bubbles: true });
+      this.dispatchEvent(evt);
     };
 
     this.$('img.delete').onclick = () => {
-      this.#eventHandles['ondelete']();
+      const evt = new CustomEvent('delete', { bubbles: true });
+      this.dispatchEvent(evt);
     };
   }
 
-  show(yesOrno) {
-    // yesOrno: true  显示 toolbar
-    //          false 隐藏 toolbar
-
+  show(yesOrno, count) {
+    this.#$count.innerHTML = count;
     this.className = (yesOrno) ? '' : 'hide';
   }
 
@@ -30,16 +31,7 @@ class Toolbar extends HTMLElement {
     this.#$count.innerHTML = num;
   }
 
-  setEventHanle(handles) {
-    this.#eventHandles = handles;
-  }
-
   #$count = null
-  #eventHandles = {
-    onexit: null,
-    onmove: null,
-    ondelete: null
-  }
 
   #html = ''
     + '<div class="box">'

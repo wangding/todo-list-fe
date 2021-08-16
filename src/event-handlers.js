@@ -11,7 +11,7 @@ function allTasks() {
 
   // $items 列表组件中展示所有待办事项
   // $editor 组件中显示 $items 中第一个待办事项
-  $items.show(data.allTasks);
+  $items.show(data.allTasks, 'allTasks:0');
   $editor.show(data.allTasks[0]);
 }
 
@@ -20,7 +20,7 @@ function noClass() {
 
   // $items 列表组件中展示所有没有分类的待办事项
   // $editor 组件中显示 $items 中第一个待办事项
-  $items.show(data.noClassTasks);
+  $items.show(data.noClassTasks, 'noClassTasks:0');
   $editor.show(data.noClassTasks[0]);
 }
 
@@ -35,7 +35,7 @@ function trash() {
 
   // $items 列表组件中展示所有删除的待办事项
   // $editor 组件中显示 $items 中第一个待办事项
-  $items.show(data.removedTasks);
+  $items.show(data.removedTasks, 'trash:0');
   $editor.show(data.removedTasks[0]);
 }
 
@@ -52,7 +52,7 @@ function xFolder(id) {
   console.log('x-folder event handler');
 
   const tasks = data.getTasksByFolder(id);
-  $items.show(tasks);
+  $items.show(tasks, `xFolder:${id}`);
   $editor.show(tasks[0]);
 }
 

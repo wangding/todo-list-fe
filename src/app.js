@@ -13,7 +13,7 @@ import { baseUrl } from './config.js';
 const q = document.querySelector,
       $ = q.bind(document);
 
-const $body = $('body');
+const $body = document.body;
 
 const app = {};
 
@@ -30,17 +30,37 @@ async function isLogin() {
 
 function showLogin() {
   $body.innerHTML = '<login-box></login-box>';
-  $('login-box').addEventListener('loginOK', async (e) => {
-    await data.init(e.detail.jwt, e.detail.email);
-    location.hash = '#/home';
+  $('login-box').addEventListener('login', async (e) => {
+    const email = e.detail.email,
+          password = e.detail.password;
+
+    let rs = await axios.post(baseUrl + '/users/login', { email, password });
+    rs = rs.data;
+
+    if(rs.code !== 0) { // login sucess
+      alert(rs.msg);
+    } else { // login fail
+      await data.init(rs.data, email);
+      location.hash = '#/home';
+    }
   });
 }
 
 function showSignup() {
   $body.innerHTML = '<signup-box></signup-box>';
-  $('signup-box').addEventListener('signupOK', () => {
-    alert('注册成功，点击"确定"按钮，进入登录页面！')
-    location.hash = '#/login';
+  $('signup-box').addEventListener('signup', async (e) => {
+    const email    = e.detail.email,
+          password = e.detail.password;
+
+    let rs = await axios.post(baseUrl + '/users/signup', { email, password });
+    rs = rs.data;
+
+    if(rs.code !== 0) { // signup fail
+      alert(rs.msg);
+    } else { // signup sucess
+      alert('注册成功，点击"确定"按钮，进入登录页面！')
+      location.hash = '#/login';
+    }
   });
 }
 
@@ -59,8 +79,6 @@ function showHome() {
   window.$folder = $('todo-folder');
   window.$items  = $('todo-items');
   window.$editor = $('todo-editor');
-
-  $header.setEmail(data.email);
 
   $folder.setEventHandlers(eventHandlers);
   $folder.setFolders(data.folders);
@@ -86,7 +104,7 @@ function registRouter() {
         break;
 
       case '#/logout':
-        data.remove();
+        data.clear();
         location.hash = '#/login';
         break;
 
@@ -99,20 +117,20 @@ function registRouter() {
         break;
 
       default:
-        console.trace(`路由：${location.hash} 没有处理！`);
+        location.hash = '#/home';
         break;
     }
   };
 }
 
-let isInitalized = false;  // App 是否被初始化，默认没有初始化
-
 app.init = async () => {
   window.data = data;
 
-  if(!isInitalized) {  // 确保 WebComponents 只定义一次
+  try {
     defineWebComponents();
-    isInitalized = true;
+  } catch(e) {
+    // 可能会出现重复注册 web component 的错误
+    // 直接忽略，确保程序不抛出异常，而停止执行
   }
 
   registRouter();

@@ -1,19 +1,60 @@
+import data from '../../data.js';
 import Toolbar from '../toolbar/toolbar.js';
+import FolderListDialog from '../folder-list-dlg/folder-list-dlg.js';
 
 class Items extends HTMLElement {
   constructor() {
     super();
 
-    customElements.define('tool-bar', Toolbar);
+    try {
+      customElements.define('tool-bar', Toolbar);
+      customElements.define('folder-list-dialog', FolderListDialog);
+    } catch (e) {
+      // 可能会出现重复注册 web component 的错误
+      // 直接忽略，确保程序不抛出异常，而停止执行
+    }
     this.$ = this.querySelector;
     this.innerHTML = this.#html;
+
     this.#$count = this.$('span.count');
     this.#$items = this.$('ul.items');
-    this.#$allSelector = this.$('.select-all');
+    this.#$selectAll = this.$('.select-all');
     this.#$toolbar = this.$('tool-bar');
-    this.#$toolbar.setEventHanle(this.#toobarEventHanles);
 
-    this.#$allSelector.onclick = (e) => {
+    this.#$toolbar.addEventListener('exit', () => {
+      this.#$selectAll.click();
+    });
+
+    console.log(this.#folder);
+    this.#$toolbar.addEventListener('move', () => {
+      console.log(this.#folder);
+      this.insertAdjacentHTML('beforeend', `<folder-list-dialog data-folderid="${this.#folder}"></folder-list-dialog>`);
+      const dialog = this.querySelector('folder-list-dialog');
+      dialog.addEventListener('select', async (e) => {
+        const dstFolderId = e.detail.folderId;
+
+        for(let i=0; i<this.#$itemSelectors.length; i++) {
+          const item = this.#$itemSelectors[i],
+                srcFolderId = item.parentNode.dataset.folderid,
+                taskId = item.parentNode.dataset.id;
+
+          if(item.checked && srcFolderId !== dstFolderId) {
+            await data.changeFolder(Number(taskId), Number(dstFolderId));
+            // items list also reflect
+          }
+        }
+        this.#$toolbar.show(false);
+      });
+    });
+
+    this.#$toolbar.addEventListener('delete', () => {
+      // todo: call data delete tasks
+      // items list also reflect
+
+      this.#$toolbar.show(false);
+    });
+
+    this.#$selectAll.onclick = (e) => {
       e.stopPropagation();
 
       if(Number(this.#$count.innerHTML) === 0) {
@@ -22,6 +63,7 @@ class Items extends HTMLElement {
       }
 
       this.#showAllSelectors();
+      this.#$toolbar.show(this.#$selectAll.checked, this.#$count.innerHTML);
     }
 
     this.#$itemSelectors.forEach( $item => {
@@ -32,13 +74,7 @@ class Items extends HTMLElement {
     });
 
     this.#$items.onclick = (e) => {
-      let target = null;
-      if(e.target.nodeName === 'LI') {
-        target = e.target;
-      } else {
-        target = e.target.parentNode;
-      }
-
+      const target = e.target;
       target.className = "active";
       this.#setItemActive(target);
 
@@ -46,10 +82,11 @@ class Items extends HTMLElement {
     }
   }
 
-  show(tasks) {
+  show(tasks, curFolder) {
     this.#$count.innerHTML = tasks.length;
     this.#$items.innerHTML = '';
     this.#$itemSelectors = [];
+    this.#folder = curFolder;
 
     for(let i=0; i<tasks.length; i++) {
       this.#$items.insertAdjacentHTML('beforeend', this.#genItemDom(tasks[i]));
@@ -62,31 +99,19 @@ class Items extends HTMLElement {
     }
   }
 
-  #$count = null
-  #$items = null
-  #$currentItem = null
-  #$itemSelectors = []
-  #$allSelector = null
-  #$toolbar = null
-  #toobarEventHanles = {
-    onexit: () => {
-      this.#$allSelector.click();
-    },
-
-    onmove: () => {
-
-    },
-
-    ondelete: () => {
-
-    }
-  }
+  #$count = null;
+  #$items = null;
+  #$currentItem = null;
+  #$itemSelectors = [];
+  #$selectAll = null;
+  #$toolbar = null;
+  #folder = '';
 
   #genItemDom(task) {
     const lines = task.content.split('\n');
 
     return ''
-      + `<li data-id="${task.id}">`
+      + `<li data-id="${task.id}" data-folderid="${task.folder_id}">`
         + '<input type="checkbox" class="select-item hide">'
         + `<p class="preview1">${lines[0]}</p>`
         + `<p class="preview2">${typeof lines[1] === 'undefined' ? ' ' : lines[i]}</p>`
@@ -95,19 +120,16 @@ class Items extends HTMLElement {
   }
 
   #showAllSelectors() {
-    const checked = this.#$allSelector.checked;
+    const checked = this.#$selectAll.checked;
 
-    this.#$allSelector.className = 'select-all' + (checked ? '' : ' hide');
+    this.#$selectAll.className = 'select-all' + (checked ? '' : ' hide');
     this.#$itemSelectors.forEach(selector => {
       selector.className = 'select-item' + (checked ? '' : ' hide');
       selector.checked = checked;
     });
-    this.#$toolbar.setCount(this.#$count.innerHTML);
-    this.#$toolbar.show(checked);
   }
 
   #setItemActive(item) {
-    console.log(item);
     if(this.#$currentItem !== null) {
       this.#$currentItem.className = '';
     }
@@ -129,7 +151,7 @@ class Items extends HTMLElement {
     + '</div>'
     + '<ul class="items">'
     + '</ul>'
-    + '<tool-bar class="hide"></tool-bar>'
+    + '<tool-bar class="hide"></tool-bar>';
 }
 
 export default Items;

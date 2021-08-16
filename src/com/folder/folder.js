@@ -16,6 +16,7 @@ class Folder extends HTMLElement {
 
     $addTask.onclick = () => this.#eventHandlers['addTask']();
     $addFolder.onclick = this.#onAddFolder.bind(this);
+
     this.#$myFolder.onclick = (e) => {
       if(e.target.className === 'folder-menu-handle') {
         this.#$currentFolder = e.target.parentNode;
@@ -28,7 +29,7 @@ class Folder extends HTMLElement {
         this.#hideFolderMenu();
       }
 
-      let target = (e.target.nodeName === 'LI') ? e.target : e.target.parentNode;
+      const target =  e.target;
       this.#setMenuItemActive(target);
       this.#eventHandlers['x-folder'](target.dataset.id);
     };
@@ -134,21 +135,27 @@ class Folder extends HTMLElement {
     this.#$folderMenu.className = 'folder-menu menu hide';
   }
 
-  async #onAddFolder(e) {
-    e.stopPropagation();
-    const folderName = prompt('请输入文件夹名称：');
-
-    if(folderName === null) return;
+  #isValidName(folderName) {
+    if(folderName === null) return false;
 
     if(folderName === '') {
       alert('添加文件夹失败！文件夹名称不能为空');
-      return;
+      return false;
     }
 
     if(this.#exist(folderName)) {
       alert('添加文件夹失败！文件夹的名称与已有的文件夹同名！');
-      return;
+      return false;
     }
+
+    return true;
+  }
+
+  async #onAddFolder(e) {
+    e.stopPropagation();
+    const folderName = prompt('请输入文件夹名称：');
+
+    if(!this.#isValidName(folderName)) return;
 
     let folderId = await this.#eventHandlers['addFolder'](folderName);
     let folderDom = this.#genFolderDom(folderName, folderId);
@@ -159,17 +166,7 @@ class Folder extends HTMLElement {
     this.#hideFolderMenu();
     const folderName = prompt('请输入文件夹的名称：');
 
-    if(folderName === null) return;
-
-    if(folderName === '') {
-      alert('添加文件夹失败！文件夹名称不能为空');
-      return;
-    }
-
-    if(this.#exist(folderName)) {
-      alert('添加文件夹失败！文件夹的名称与已有的文件夹同名！');
-      return;
-    }
+    if(!this.#isValidName(folderName)) return;
 
     const $span = this.#$currentFolder.querySelector('span');
     $span.innerHTML = folderName;
@@ -200,7 +197,7 @@ class Folder extends HTMLElement {
 
     this.#eventHandlers['deleteFolder'](id);
   }
-  
+
   #html = ''
       + '<div class="new">'
         + '<img class="icon" src="./src/com/folder/add.svg">'

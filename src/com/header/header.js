@@ -1,3 +1,5 @@
+import data from '../../data.js';
+
 class Header extends HTMLElement {
   constructor() {
     super();
@@ -8,20 +10,14 @@ class Header extends HTMLElement {
         + '<span class="app-title">云待办事项</span>'
       + '</div>'
       + '<div class="search">'
-        + '<input type="text" placeholder="搜索全部待办事项"><button>搜索</button>'
+        + '<input type="text" placeholder="搜索全部待办事项">'
+        + '<button>搜索</button>'
       + '</div>'
       + '<div class="user">'
-        + '<span class="username">王顶</span><span class="split">|</span>'
+        + `<span class="username">${data.email}</span>`
+        + '<span class="split">|</span>'
         + '<a class="exit" href="#/logout">退出</a>'
       + '</div>';
-
-    this.$ = this.querySelector;
-  }
-
-  setEmail(email) {
-    const $username = this.$('.username');
-    $username.innerText = email;
-
   }
 }
 

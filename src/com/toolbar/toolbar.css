@@ -19,7 +19,7 @@ tool-bar span {
 }
 
 tool-bar img.icon {
-  cursor: pointer;
+  pointer-events: auto;
 }
 
 tool-bar img.exit {

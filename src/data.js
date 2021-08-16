@@ -115,7 +115,26 @@ class Data {
     localStorage.setItem('folders', JSON.stringify(folders));
   }
 
-  remove() {
+  async changeFolder(taskId, folderId) {
+    console.log(taskId);
+    console.log(folderId);
+
+    await axios.put(baseUrl + `/folders/${taskId}`, { folderId }, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    let tasks = this.allTasks;
+    for(let i=0; i<tasks.length; i++) {
+      if(tasks[i].id === taskId) {
+        tasks[i].folder_id = folderId;
+        break;
+      }
+    }
+
+    localStorage.setItem('allTasks', JSON.stringify(tasks));
+  }
+
+  clear() {
     localStorage.clear();
   }
 }

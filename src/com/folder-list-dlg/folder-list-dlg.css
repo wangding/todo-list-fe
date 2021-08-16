@@ -1,0 +1,60 @@
+folder-list-dialog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,.65);
+  display: flex;
+  /*display: none;*/
+  align-items: center;
+}
+
+.dialog-box {
+  height: 400px;
+  width: 50%;
+  box-sizing: border-box;
+  background-color: white;
+  margin: 0 auto;
+}
+
+.dialog-box .title {
+  height: 30px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #e4e4e4;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.title img.exit {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.dialog-box .folder-list {
+  width: 100%;
+  height: 350px;
+  box-sizing: border-box;
+  padding: 20px;
+  list-style: none;
+}
+
+.dialog-box .folder-list li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  height: 40px;
+}
+
+.dialog-box .folder-list li:hover {
+  background-color: #f4f4f4;
+}
+
+.folder-list li img.icon,
+.folder-list li span {
+  pointer-events: none;
+}
+

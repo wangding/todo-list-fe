@@ -1,49 +1,41 @@
-import { baseUrl } from '../../config.js';
-
 class LoginBox extends HTMLElement {
   constructor() {
     super();
 
-    this.innerHTML = ''
-      + '<h1 class="login-title">登录</h1>'
-      + '<form class="login-form">'
-        + '<label class="login-label">邮箱：</label>'
-        + '<input class="login-input" name="userName" type="email" autofocus required><br>'
-        + '<label class="login-label">密码：</label>'
-        + '<input class="login-input" name="password" type="password" required><br>'
-        + '<input class="login-submit" type="submit" value="登 录"> <a href="#/signup">注册新用户</a>'
-      + '</form>';
-
     this.$ = this.querySelector;
+    this.innerHTML = this.#html;
 
-    const $form = this.$('form'),
+    const $loginForm = this.$('form'),
           $userName = this.$('input[name="userName"]'),
           $password = this.$('input[name="password"]');
 
-    $form.onsubmit = async function(e) {
+    $loginForm.onsubmit = (e) => {
       const email = $userName.value,
             password = $password.value;
 
+      $userName.value = '';
+      $password.value = '';
+
       e.preventDefault();
 
-      let rs = await axios.post(baseUrl + '/users/login', { email, password });
-      rs = rs.data;
+      const evt = new CustomEvent('login', {
+        detail: { email, password },
+        bubbles: true
+      });
 
-      if(rs.code !== 0) { // 登录失败
-        alert(rs.msg);
-      } else { // 登录成功
-        $userName.value = '';
-        $password.value = '';
-
-        const evt = new CustomEvent('loginOK', { 'detail': {
-          'jwt': rs.data,
-          'email': email
-        }, bubbles: true });
-
-        this.dispatchEvent(evt);
-      }
+      this.dispatchEvent(evt);
     };
   }
+
+  #html = ''
+    + '<h1 class="login-title">登录</h1>'
+    + '<form class="login-form">'
+      + '<label class="login-label">邮箱：</label>'
+      + '<input class="login-input" name="userName" type="email" autofocus required><br>'
+      + '<label class="login-label">密码：</label>'
+      + '<input class="login-input" name="password" type="password" required><br>'
+      + '<input class="login-submit" type="submit" value="登 录"> <a href="#/signup">注册新用户</a>'
+    + '</form>'
 }
 
 export default LoginBox;

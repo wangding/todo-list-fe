@@ -1,4 +1,5 @@
 @import '../toolbar/toolbar.css';
+@import '../folder-list-dlg/folder-list-dlg.css';
 
 todo-items .header {
   box-sizing: border-box;
@@ -68,6 +69,7 @@ ul.items li .select-item {
 ul.items li p {
   height: 24px;
   cursor: pointer;
+  pointer-events: none;
 }
 
 p.update-time {
