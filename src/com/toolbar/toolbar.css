@@ -1,0 +1,63 @@
+tool-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10%;
+  background-color: #3174ff;
+}
+
+tool-bar .box {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+tool-bar span {
+  color: white;
+}
+
+tool-bar img.icon {
+  cursor: pointer;
+}
+
+tool-bar img.exit {
+  margin-left: 40px;
+}
+
+tool-bar img.move {
+  position: absolute;
+  right: 200px;
+}
+
+tool-bar img.delete {
+  position: absolute;
+  right: 80px;
+}
+
+tool-bar img.move:hover ~ span.move,
+tool-bar img.exit:hover ~ span.exit,
+tool-bar img.delete:hover ~ span.delete {
+  display: block;
+}
+
+tool-bar span.tooltip {
+  background-color: rgba(0,0,0,.75);
+  color: white;
+  border-radius: 5px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  line-height: 30px;
+  position: absolute;
+  top: 45px;
+}
+
+tool-bar span.move {
+  right: 165px;
+}
+
+tool-bar span.delete {
+  right: 30px;
+}
+

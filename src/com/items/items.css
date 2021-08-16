@@ -1,3 +1,5 @@
+@import '../toolbar/toolbar.css';
+
 todo-items .header {
   box-sizing: border-box;
   height: 40px;
@@ -8,12 +10,20 @@ todo-items .header {
   font-size: 10px;
 }
 
+
+todo-items input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
 .header > .select-all {
   position: absolute;
   left: 10px;
 }
 
-.header > span:hover + input {
+.header > .select-all:hover,
+.header > span:hover + input[type="checkbox"] {
   display: block;
 }
 

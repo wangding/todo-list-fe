@@ -1,18 +1,30 @@
+import Toolbar from '../toolbar/toolbar.js';
+
 class Items extends HTMLElement {
   constructor() {
     super();
 
+    customElements.define('tool-bar', Toolbar);
     this.$ = this.querySelector;
     this.innerHTML = this.#html;
     this.#$count = this.$('span.count');
     this.#$items = this.$('ul.items');
+    this.#$allSelector = this.$('.select-all');
+    this.#$toolbar = this.$('tool-bar');
+    this.#$toolbar.setEventHanle(this.#toobarEventHanles);
 
-    this.$('.select-all').onclick = () => {
+    this.#$allSelector.onclick = (e) => {
       e.stopPropagation();
-      console.log('select-all checked');
+
+      if(Number(this.#$count.innerHTML) === 0) {
+        e.preventDefault();
+        return;
+      }
+
+      this.#showAllSelectors();
     }
 
-    this.querySelectorAll('.select-item').forEach( $item => {
+    this.#$itemSelectors.forEach( $item => {
       $item.onclick = (e) => {
         e.stopPropagation();
         console.log($item.checked);
@@ -37,19 +49,38 @@ class Items extends HTMLElement {
   show(tasks) {
     this.#$count.innerHTML = tasks.length;
     this.#$items.innerHTML = '';
+    this.#$itemSelectors = [];
 
     for(let i=0; i<tasks.length; i++) {
       this.#$items.insertAdjacentHTML('beforeend', this.#genItemDom(tasks[i]));
     }
 
     const $items = this.#$items.querySelectorAll('li');
-    console.log($items);
-    this.#setItemActive($items[0]);
+    if($items.length !== 0) {
+      this.#setItemActive($items[0]);
+      this.#$itemSelectors = this.querySelectorAll('.select-item');
+    }
   }
 
   #$count = null
   #$items = null
   #$currentItem = null
+  #$itemSelectors = []
+  #$allSelector = null
+  #$toolbar = null
+  #toobarEventHanles = {
+    onexit: () => {
+      this.#$allSelector.click();
+    },
+
+    onmove: () => {
+
+    },
+
+    ondelete: () => {
+
+    }
+  }
 
   #genItemDom(task) {
     const lines = task.content.split('\n');
@@ -63,7 +94,20 @@ class Items extends HTMLElement {
       + '</li>';
   }
 
+  #showAllSelectors() {
+    const checked = this.#$allSelector.checked;
+
+    this.#$allSelector.className = 'select-all' + (checked ? '' : ' hide');
+    this.#$itemSelectors.forEach(selector => {
+      selector.className = 'select-item' + (checked ? '' : ' hide');
+      selector.checked = checked;
+    });
+    this.#$toolbar.setCount(this.#$count.innerHTML);
+    this.#$toolbar.show(checked);
+  }
+
   #setItemActive(item) {
+    console.log(item);
     if(this.#$currentItem !== null) {
       this.#$currentItem.className = '';
     }
@@ -85,6 +129,7 @@ class Items extends HTMLElement {
     + '</div>'
     + '<ul class="items">'
     + '</ul>'
+    + '<tool-bar class="hide"></tool-bar>'
 }
 
 export default Items;
