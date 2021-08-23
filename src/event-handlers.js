@@ -11,8 +11,8 @@ function allTasks() {
 
   // $items 列表组件中展示所有待办事项
   // $editor 组件中显示 $items 中第一个待办事项
-  $items.show(data.allTasks, 'allTasks:0');
-  $editor.show(data.allTasks[0]);
+  $items.show(data.tasks, 'allTasks:0');
+  $editor.show(data.tasks[0]);
 }
 
 function noClass() {

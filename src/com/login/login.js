@@ -35,7 +35,7 @@ class LoginBox extends HTMLElement {
       + '<label class="login-label">密码：</label>'
       + '<input class="login-input" name="password" type="password" required><br>'
       + '<input class="login-submit" type="submit" value="登 录"> <a href="#/signup">注册新用户</a>'
-    + '</form>'
+    + '</form>';
 }
 
 export default LoginBox;

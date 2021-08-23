@@ -71,8 +71,8 @@ class Folder extends HTMLElement {
     });
   }
 
-  #menuItems = {}
-  #activeMenuItem = null
+  #menuItems = {};
+  #activeMenuItem = null;
   #eventHandlers = {
     'addTask': null,
     'menu-all-tasks': null,
@@ -84,11 +84,11 @@ class Folder extends HTMLElement {
     'addFolder': null,
     'deleteFolder': null,
     'renameFolder': null
-  }
-  #folders = []
-  #$myFolder = null
-  #$folderMenu = null
-  #$currentFolder = null
+  };
+  #folders = [];
+  #$myFolder = null;
+  #$folderMenu = null;
+  #$currentFolder = null;
 
   #getMenuItems() {
     const items = this.querySelectorAll('div.new + ul.menu > li');
@@ -231,7 +231,7 @@ class Folder extends HTMLElement {
       + '<ul class="folder-menu menu hide">'
         + '<li class="rename-folder">重命名文件夹</li>'
         + '<li class="delete-folder">删除文件夹</li>'
-      + '</ul>'
+      + '</ul>';
 }
 
 export default Folder;

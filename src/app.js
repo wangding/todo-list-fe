@@ -82,7 +82,11 @@ function showHome() {
 
   $folder.setEventHandlers(eventHandlers);
   $folder.setFolders(data.folders);
-  $items.show(data.allTasks);
+  $items.show(data.tasks, 'allTasks:0');
+
+  $items.addEventListener('load', (e) => {
+    $editor.show(e.detail.taskId);
+  });
 }
 
 function defineWebComponents() {

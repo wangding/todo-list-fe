@@ -11,22 +11,15 @@ class Data {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
-    res = res.data;
-    localStorage.setItem('allTasks', JSON.stringify(res.data));
-
-    res = await axios.get(baseUrl + '/tasks/noclass', {
-      headers: { 'Authorization': 'Bearer '+ data.jwt }
-    });
-
-    res = res.data;
-    localStorage.setItem('noClassTasks', JSON.stringify(res.data));
+    res = this.#arryToKeyValue(res.data.data);
+    localStorage.setItem('tasks', JSON.stringify(res));
 
     res = await axios.get(baseUrl + '/folders', {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
-    res = res.data;
-    localStorage.setItem('folders', JSON.stringify(res.data));
+    res = this.#arryToKeyValue(res.data.data);
+    localStorage.setItem('folders', JSON.stringify(res));
   }
 
   get jwt() {
@@ -37,36 +30,70 @@ class Data {
     return localStorage.getItem('email');
   }
 
-  get allTasks() {
-    return JSON.parse(localStorage.getItem('allTasks'));
+  get tasks() {
+    const tasks = this.#rowTasks(),
+          res   = [];
+    for(const id in tasks) {
+      if(tasks[id].deletedTime === null) res.push(tasks[id]);
+    }
+    return res;
   }
 
   get noClassTasks() {
-    return JSON.parse(localStorage.getItem('noClassTasks'));
+    const tasks = this.tasks,
+          noClassTasks = [];
+
+    for(const task of tasks) {
+      if(task.folder_id === null) noClassTasks.push(task);
+    }
+    return noClassTasks;
   }
 
   get removedTasks() {
-    return ['333', '444'];
+    const tasks = this.#rowTasks(),
+          res   = [];
+    for(const id in tasks) {
+      if(tasks[id].deletedTime !== null) res.push(tasks[id]);
+    }
+    return res;
+  }
+
+  searchTasks(content) {
+    const tasks = this.tasks,
+          res   = [];
+    for(const task of tasks) {
+      if(task.content.includes(content)) res.push(task);
+    }
+    localStorage.setItem('searched', JSON.stringify(res));
+    return res;
   }
 
   get searchedTasks() {
-    return ['555', '666'];
+    const res = JSON.parse(localStorage.getItem('searched'));
+    return res;
   }
 
   get folders() {
-    return JSON.parse(localStorage.getItem('folders'));
+    return this.#keyValueToArr(JSON.parse(localStorage.getItem('folders')));
   }
 
   getTasksByFolder(id) {
-    const tasks = [];
-    for(let i=0; i<this.allTasks.length; i++) {
-      let item = this.allTasks[i];
-      if(item.folder_id === Number(id)) tasks.push(item);
+    const tasks = this.tasks,
+          res = [];
+    for(const task of tasks) {
+      if(task.folder_id === Number(id)) res.push(task);
     }
-    return tasks;
+    return res;
+  }
+
+  getTaskById(taskId) {
+    return this.#rowTasks()[taskId];
   }
 
   async addFolder(name) {
+    if(name === '' || typeof name === 'undefined') return;
+    if(this.#folderExist(name)) return;
+
     let res = await axios.post(baseUrl + '/folders', { item: name }, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
@@ -74,8 +101,7 @@ class Data {
     let folders = this.folders;
     folders.unshift({
       id: res.data.data,
-      name: name,
-      user_id: folders[0].user_id
+      name: name
     });
 
     localStorage.setItem('folders', JSON.stringify(folders));
@@ -84,6 +110,9 @@ class Data {
   }
 
   async renameFolder(id, name) {
+    if(name === '' || typeof name === 'undefined') return;
+    if(this.#folderExist(name)) return;
+
     await axios.put(baseUrl + `/folders/${id}`, { item: name }, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
@@ -104,38 +133,103 @@ class Data {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
-    let folders = this.folders;
-    for(let i=0; i<folders.length; i++) {
-      if(folders[i].id === id) {
-        folders.splice(i, 1);
-        break;
+    const folders = JSON.parse(localStorage.getItem('folders'));
+    delete folders[id];
+    localStorage.setItem('folders', JSON.stringify(folders));
+
+    const tasks = this.#rowTasks();
+    for(const id in tasks) {
+      console.log(tasks[id]);
+      if(tasks[id].folder_id === id) {
+        await this.changeFolder(tasks[id].id, 0);
+        await this.deleteTask(tasks[id].id);
       }
     }
-
-    localStorage.setItem('folders', JSON.stringify(folders));
   }
 
-  async changeFolder(taskId, folderId) {
-    console.log(taskId);
-    console.log(folderId);
-
-    await axios.put(baseUrl + `/folders/${taskId}`, { folderId }, {
+  async deleteTask(id) {
+    await axios.delete(baseUrl + `/tasks/${id}`, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
-    let tasks = this.allTasks;
-    for(let i=0; i<tasks.length; i++) {
-      if(tasks[i].id === taskId) {
-        tasks[i].folder_id = folderId;
-        break;
-      }
-    }
+    let tasks = this.#rowTasks();
+    tasks[id].deletedTime = (new Date()).toISOString();
 
-    localStorage.setItem('allTasks', JSON.stringify(tasks));
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  async addTask(content, folderId) {
+    if(typeof folderId === 'undefined') folderId = null;
+
+    const res = await axios.post(baseUrl + `/tasks/`, {
+      content, folderId
+    }, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    const id = res.data.data,
+          tasks = this.#rowTasks();
+    tasks[id] = {
+      id: id,
+      content: content,
+      folder_id: (typeof folderId === 'undefined') ? null : folderId,
+      createdTime: (new Date()).toISOString(),
+      updatedTime: (new Date()).toISOString(),
+      deletedTime: null
+    };
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  async updateTaskById(taskId, content) {
+    await axios.put(baseUrl + `/tasks/${taskId}`, { content }, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    let tasks = this.#rowTasks();
+    tasks[taskId].content = content;
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  async changeFolder(taskId, folderId) {
+    await axios.put(baseUrl + `/tasks/${taskId}`, { folderId }, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    let tasks = this.#rowTasks();
+    tasks[taskId].folder_id = (folderId === 0) ? null : folderId;
+    localStorage.setItem('tasks', JSON.stringify(tasks));
   }
 
   clear() {
     localStorage.clear();
+  }
+
+  #arryToKeyValue(arr) {
+    const res = {};
+    for(let i=0; i<arr.length; i++) {
+      res[arr[i].id] = arr[i];
+    }
+    return res;
+  }
+
+  #keyValueToArr(obj) {
+    const arr = [];
+    for(let id in obj) {
+      arr.push(obj[id]);
+    }
+    return arr;
+  }
+
+  #rowTasks() {
+    return JSON.parse(localStorage.getItem('tasks'));
+  }
+
+  #folderExist(name) {
+    const folders = this.folders;
+    for(const folder of folders) {
+      if(folder.name === name) return true;
+    }
+    return false;
   }
 }
 

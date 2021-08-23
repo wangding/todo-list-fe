@@ -31,7 +31,7 @@ class Toolbar extends HTMLElement {
     this.#$count.innerHTML = num;
   }
 
-  #$count = null
+  #$count = null;
 
   #html = ''
     + '<div class="box">'
@@ -42,7 +42,7 @@ class Toolbar extends HTMLElement {
       + '<span class="tooltip exit hide">退出多选模式</span>'
       + '<span class="tooltip move hide">移动到文件夹</span>'
       + '<span class="tooltip delete hide">删除所选待办事项</span>'
-    + '</div>'
+    + '</div>';
 }
 
 export default Toolbar;

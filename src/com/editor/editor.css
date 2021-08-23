@@ -1,0 +1,35 @@
+todo-editor .toolbar {
+  width: 100%;
+  height: 8%;
+  box-sizing: border-box;
+  border-bottom: 1px solid #949494;
+  background-color: #f4f4f4;
+  display: flex;
+  align-items: center;
+}
+
+todo-editor .editor {
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 90%;
+  border: 0px;
+  padding: 10px;
+  resize: none;
+}
+
+.toolbar .icon {
+  pointer-events: auto;
+}
+
+.toolbar .tooltip {
+  background-color: black;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: white;
+  display: none;
+}
+
+.toolbar .delete:hover ~ span.delete{
+  display: block;
+}

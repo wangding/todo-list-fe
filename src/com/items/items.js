@@ -25,10 +25,8 @@ class Items extends HTMLElement {
       this.#$selectAll.click();
     });
 
-    console.log(this.#folder);
     this.#$toolbar.addEventListener('move', () => {
-      console.log(this.#folder);
-      this.insertAdjacentHTML('beforeend', `<folder-list-dialog data-folderid="${this.#folder}"></folder-list-dialog>`);
+      this.insertAdjacentHTML('beforeend', `<folder-list-dialog data-folderid="${this.#curFolder}"></folder-list-dialog>`);
       const dialog = this.querySelector('folder-list-dialog');
       dialog.addEventListener('select', async (e) => {
         const dstFolderId = e.detail.folderId;
@@ -40,18 +38,26 @@ class Items extends HTMLElement {
 
           if(item.checked && srcFolderId !== dstFolderId) {
             await data.changeFolder(Number(taskId), Number(dstFolderId));
-            // items list also reflect
           }
         }
+        //this.show(tasks, this.#curFolder);
         this.#$toolbar.show(false);
       });
     });
 
     this.#$toolbar.addEventListener('delete', () => {
-      // todo: call data delete tasks
-      // items list also reflect
+      const deleteOrNot = confirm('确定要删除选中的待办事项吗？');
+      if(delOrNot) {
+        this.#$toolbar.show(false);
 
-      this.#$toolbar.show(false);
+        for(let i=0; i<this.#$itemSelectors.length; i++) {
+          const item = this.#$itemSelectors[i],
+                taskId = item.parentNode.dataset.id;
+
+          //await data.deleteTask(Number(taskId));
+          // items list also reflect
+          }
+        }
     });
 
     this.#$selectAll.onclick = (e) => {
@@ -78,15 +84,21 @@ class Items extends HTMLElement {
       target.className = "active";
       this.#setItemActive(target);
 
-      // todo: call editor to load current task
+      const evt = new CustomEvent('load', {
+        detail:  { 'taskId': e.target.dataset.id },
+        bubbles: true
+      });
+
+      this.dispatchEvent(evt);
     }
   }
 
   show(tasks, curFolder) {
+    this.#tasks = tasks;
     this.#$count.innerHTML = tasks.length;
     this.#$items.innerHTML = '';
     this.#$itemSelectors = [];
-    this.#folder = curFolder;
+    this.#curFolder = curFolder;
 
     for(let i=0; i<tasks.length; i++) {
       this.#$items.insertAdjacentHTML('beforeend', this.#genItemDom(tasks[i]));
@@ -99,13 +111,14 @@ class Items extends HTMLElement {
     }
   }
 
+  #curFolder = '';
+  #tasks = null;
   #$count = null;
   #$items = null;
   #$currentItem = null;
   #$itemSelectors = [];
   #$selectAll = null;
   #$toolbar = null;
-  #folder = '';
 
   #genItemDom(task) {
     const lines = task.content.split('\n');

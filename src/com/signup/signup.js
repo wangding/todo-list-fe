@@ -44,7 +44,7 @@ class SignupBox extends HTMLElement {
       + '<label class="login-label">确认：</label>'
       + '<input class="login-input" name="pwd-repeat" type="password" required><br>'
       + '<input class="login-submit" type="submit" value="注 册">'
-    + '</form>'
+    + '</form>';
 }
 
 export default SignupBox;

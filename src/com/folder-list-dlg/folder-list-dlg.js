@@ -4,11 +4,10 @@ class FolderListDialog extends HTMLElement {
   constructor() {
     super();
 
-    console.log('--------------', this.dataset.folderid);
     this.$ = this.querySelector;
     this.innerHTML = this.#html;
     this.#$folderList = this.$('.dialog-box .folder-list');
-    this.#fill();
+    this.#fill(this.dataset.folderid);
 
     this.$('img.exit').onclick = () => {
       this.remove();
@@ -28,12 +27,36 @@ class FolderListDialog extends HTMLElement {
 
   #$folderList = null;
 
-  #fill() {
+  #fill(folderid) {
     const folders = data.folders;
+    const folder = folderid.split(':'),
+          fClass = folder[0],
+          folderId = Number(folder[1]);
+
+    if(fClass === 'xFolder') {
+      let dom = this.#genMoveOutNode();
+      this.#$folderList.insertAdjacentHTML('beforeend', dom);
+
+      for(let i=0; i<folders.length; i++) {
+        if(folders[i].id === folderId) {
+          folders.splice(i, 1);
+          break;
+        }
+      }
+    }
+
     for(let i=0; i<folders.length; i++) {
       let dom = this.#genListNode(folders[i]);
       this.#$folderList.insertAdjacentHTML('beforeend', dom);
     }
+  }
+
+  #genMoveOutNode() {
+    return ''
+      + `<li data-id="0">`
+        + '<img class="icon" src="./src/com/folder-list-dlg/return.svg">'
+        + `<span>移出文件夹</span>`
+      + '</li>';
   }
 
   #genListNode(folder) {
