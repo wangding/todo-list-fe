@@ -1,20 +1,32 @@
+import data from '../../data.js';
+
 class Folder extends HTMLElement {
   constructor() {
     super();
 
     this.$ = this.querySelector;
-    this.innerHTML = this.#html;
+    this.innerHTML  = this.#html;
+    this.#$myFolder = this.$('.menu .menu');
+    this.#setFolders(data.folders);
 
     const that = this,
           $addTask  = this.$('.new'),
           $addFolder = this.$('.add-folder');
 
     this.#getMenuItems();
-    this.#$myFolder       = this.$('.menu .menu');
-    this.#$folderMenu     = this.$('ul.folder-menu');
+    this.#$folderMenu    = this.$('ul.folder-menu');
     this.#activeMenuItem = this.#menuItems['menu-all-tasks'];
 
-    $addTask.onclick = () => this.#eventHandlers['addTask']();
+    $addTask.onclick = () => {
+      const folderId = this.#activeMenuItem.dataset.id;
+      const evt = new CustomEvent('addTask', {
+        detail: { folderId },
+        bubbles: true
+      });
+
+      this.dispatchEvent(evt);
+    };
+
     $addFolder.onclick = this.#onAddFolder.bind(this);
 
     this.#$myFolder.onclick = (e) => {
@@ -36,39 +48,40 @@ class Folder extends HTMLElement {
 
     for(let menu in this.#menuItems) {
       this.#menuItems[menu].onclick = function() {
+        console.log('click');
         that.#setMenuItemActive(this);
-        that.#eventHandlers[this.dataset.id]();
+        const items = that.#data[this.dataset.id];
+        const evt = new CustomEvent('loadItems', {
+          detail: { items },
+          bubbles: true
+        });
+
+        this.dispatchEvent(evt);
       }
+    }
+
+    this.#menuItems['menu-my-folders'].onclick = () => {
+      this.#showMyFolder();
+      console.log(this.#$myFolder);
     }
 
     this.$('.rename-folder').onclick = () => this.#onRenameFolder();
     this.$('.delete-folder').onclick = () => this.#onDeleteFolder();
   }
 
-  showMyFolder() {
-    const className = this.#$myFolder.className,
-          $expandImg = this.$('img.expand');
-
-    if(className === 'menu') { // 我的文件夹没有折叠，需要隐藏起来
-      this.#$myFolder.className = 'menu hide';
-      $expandImg.src = './src/com/folder/arr-right.svg';
-    } else {  // 我的文件夹折叠了，需要展开
-      this.#$myFolder.className = 'menu';
-      $expandImg.src = './src/com/folder/arr-down.svg';
-    }
+  sendClick(index) {
+    this.#menuItems[index].click();
   }
+
+  menu =  {
+    'all':     'menu-all-tasks',
+    'noClass': 'menu-no-class',
+    'trash':   'menu-tash',
+    'search':  'menu-finding'
+  };
 
   setEventHandlers(handlers) {
     this.#eventHandlers = handlers;
-  }
-
-  setFolders(folders) {
-    this.#folders = folders;
-
-    this.#folders.forEach(item => {
-      let folderDom = this.#genFolderDom(item.name, item.id);
-      this.#$myFolder.insertAdjacentHTML('beforeend', folderDom);
-    });
   }
 
   #menuItems = {};
@@ -89,6 +102,28 @@ class Folder extends HTMLElement {
   #$myFolder = null;
   #$folderMenu = null;
   #$currentFolder = null;
+
+  #showMyFolder() {
+    const className = this.#$myFolder.className,
+          $expandImg = this.$('img.expand');
+
+    if(className === 'menu') { // 我的文件夹没有折叠，需要隐藏起来
+      this.#$myFolder.className = 'menu hide';
+      $expandImg.src = './src/com/folder/arr-right.svg';
+    } else {  // 我的文件夹折叠了，需要展开
+      this.#$myFolder.className = 'menu';
+      $expandImg.src = './src/com/folder/arr-down.svg';
+    }
+  }
+
+  #setFolders(folders) {
+    this.#folders = folders;
+
+    this.#folders.forEach(item => {
+      let folderDom = this.#genFolderDom(item.name, item.id);
+      this.#$myFolder.insertAdjacentHTML('beforeend', folderDom);
+    });
+  }
 
   #getMenuItems() {
     const items = this.querySelectorAll('div.new + ul.menu > li');
@@ -197,6 +232,13 @@ class Folder extends HTMLElement {
 
     this.#eventHandlers['deleteFolder'](id);
   }
+
+  #data = {
+    'menu-all-tasks': data.tasks,
+    'menu-no-class' : data.noClassTasks,
+    'menu-trash'    : data.removedTasks,
+    'menu-finding'  : data.searchedTasks
+  };
 
   #html = ''
       + '<div class="new">'

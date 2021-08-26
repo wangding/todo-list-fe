@@ -6,7 +6,7 @@ import Folder from './com/folder/folder.js';
 import Items from './com/items/items.js';
 import Editor from './com/editor/editor.js';
 
-import eventHandlers from './event-handlers.js';
+import handleEvent from './event-handlers.js';
 import data from './data.js';
 import { baseUrl } from './config.js';
 
@@ -80,13 +80,9 @@ function showHome() {
   window.$items  = $('todo-items');
   window.$editor = $('todo-editor');
 
-  $folder.setEventHandlers(eventHandlers);
-  $folder.setFolders(data.folders);
-  $items.show(data.tasks, 'allTasks:0');
+  handleEvent();
 
-  $items.addEventListener('load', (e) => {
-    $editor.show(e.detail.taskId);
-  });
+  $folder.sendClick($folder.menu.all);
 }
 
 function defineWebComponents() {

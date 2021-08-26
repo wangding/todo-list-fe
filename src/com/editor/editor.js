@@ -6,10 +6,14 @@ class Editor extends HTMLElement {
 
     this.$ = this.querySelector;
     this.innerHTML = this.#html;
+    this.#$toolbar = this.$('.toolbar');
     this.#$editor = this.$('textarea.editor');
   }
 
   show(taskId) {
+    this.#showToolbar(taskId !== 0);
+    if(taskId === 0) return;
+
     if(this.#curTaskId === 0) { // 第一次载入内容
       this.#$editor.value = data.getTaskById(Number(taskId));
     } else {
@@ -26,8 +30,13 @@ class Editor extends HTMLElement {
     this.#curTaskId = taskId;
   }
 
+  #showToolbar(yesOrNo) {
+    this.#$toolbar.className = yesOrNo ? 'toolbar' : 'toolbar hide';
+  }
+
   #$editor = null;
   #curTaskId = 0;
+  #$toolbar = null;
   #html = ''
     + '<div class="toolbar">'
       + '<img class="delete icon" src="./src/com/folder/trash.svg">'

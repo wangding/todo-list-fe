@@ -1,3 +1,38 @@
+function handleEvent() {
+  $header.addEventListener('search', (e) => {
+    const keyWord = e.detail.keyWord;
+    const res = data.searchTasks(keyWord);
+
+    if(res.length === 0) {
+      alert('没有找到匹配的待办事项！');
+      return;
+    }
+
+    console.log(res);
+    // todo: folder 切换到回收站菜单
+  });
+
+  $folder.addEventListener('addTask', (e) => {
+    console.log(e.detail.folderId);
+
+    // items 添加一个空白待办事项
+    // editor 添加一个空白待办事项
+  });
+
+  $folder.addEventListener('loadItems', (e) => {
+    const tasks = e.detail.items,
+          taskId = (tasks.length === 0) ? 0 : tasks[0].id;
+
+    $items.show(tasks);
+    $editor.show(taskId);
+  });
+
+
+  $items.addEventListener('load', (e) => {
+    $editor.show(e.detail.taskId);
+  });
+}
+
 function addTask() {
   console.log('addTask event handler');
   // $items 列表组件中添加一个新代办事项
@@ -81,4 +116,4 @@ const eventHandlers = {
   'renameFolder':    renameFolder
 };
 
-export default eventHandlers;
+export default handleEvent;

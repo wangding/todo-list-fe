@@ -138,13 +138,13 @@ class Data {
     localStorage.setItem('folders', JSON.stringify(folders));
 
     const tasks = this.#rowTasks();
-    for(const id in tasks) {
-      console.log(tasks[id]);
-      if(tasks[id].folder_id === id) {
-        await this.changeFolder(tasks[id].id, 0);
-        await this.deleteTask(tasks[id].id);
+    for(const index in tasks) {
+      if(tasks[index].folder_id === id) {
+        tasks[index].folder_id = null;
+        await this.deleteTask(tasks[index].id);
       }
     }
+    localStorage.setItem('tasks', JSON.stringify(tasks));
   }
 
   async deleteTask(id) {
@@ -154,7 +154,6 @@ class Data {
 
     let tasks = this.#rowTasks();
     tasks[id].deletedTime = (new Date()).toISOString();
-
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }
 
