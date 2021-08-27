@@ -22,9 +22,9 @@ class Toolbar extends HTMLElement {
     };
   }
 
-  show(yesOrno, count) {
-    this.#$count.innerHTML = count;
+  show(yesOrno, num) {
     this.className = (yesOrno) ? '' : 'hide';
+    this.setCount(num);
   }
 
   setCount(num) {
