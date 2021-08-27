@@ -167,8 +167,13 @@ class Data {
   }
 
   async addFolder(name) {
-    if(name === '' || typeof name === 'undefined') return;
-    if(this.#folderExist(name)) return;
+    if(name === '' || typeof name === 'undefined') {
+      throw new Error('添加文件夹失败！文件夹名称不能为空');
+    }
+
+    if(this.#folderExist(name)) {
+      throw new Error('添加文件夹失败！文件夹的名称与已有的文件夹同名！');
+    }
 
     let res = await axios.post(baseUrl + '/folders', { item: name }, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
@@ -186,8 +191,13 @@ class Data {
   }
 
   async renameFolder(id, name) {
-    if(name === '' || typeof name === 'undefined') return;
-    if(this.#folderExist(name)) return;
+    if(name === '' || typeof name === 'undefined') {
+      throw new Error('修改文件夹失败！文件夹名称不能为空');
+    }
+
+    if(this.#folderExist(name)) {
+      throw new Error('修改文件夹失败！文件夹的名称与已有的文件夹同名！');
+    }
 
     await axios.put(baseUrl + `/folders/${id}`, { item: name }, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
@@ -226,6 +236,7 @@ class Data {
   async #init(jwt, email) {
     localStorage.setItem('jwt', jwt);
     localStorage.setItem('email', email);
+    localStorage.setItem('searched', JSON.stringify([]));
 
     let res = await axios.get(baseUrl + '/tasks', {
       headers: { 'Authorization': 'Bearer '+ data.jwt }

@@ -1,4 +1,4 @@
-todo-folder .new {
+todo-folder .add-task {
   width: 120px;
   height: 30px;
   background-color: white;
@@ -14,20 +14,25 @@ todo-folder .new {
   height: 20px;
   margin-right: 8px;
   pointer-events: none;
-  cursor: pointer;
+  cursor: poinadd-task;
 }
 
 .menu li > img.icon.add-folder {
   pointer-events: auto;
 }
 
-.new img {
+.add-task img {
   margin: 5px 5px 0 15px;
 }
 
-.new span {
+.add-task span {
   text-align: center;
   line-height: 30px;
+}
+
+.add-task.hide {
+  background-color: #f4f4f4;
+  pointer-events: none;
 }
 
 .menu li {
@@ -100,4 +105,5 @@ li span {
   width: 150px;
   list-style: none;
   position: absolute;
+  z-index: 20;
 }

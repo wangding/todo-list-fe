@@ -70,7 +70,7 @@ function showHome() {
 
   handleEvent();
 
-  $folder.sendClick($folder.menu.all);
+  $folder.turnToAllTasks();
 }
 
 function defineWebComponents() {
