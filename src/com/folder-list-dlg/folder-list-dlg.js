@@ -34,7 +34,7 @@ class FolderListDialog extends HTMLElement {
           folderId = Number(folder[1]);
 
     if(fClass === 'xFolder') {
-      let dom = this.#genMoveOutNode();
+      const dom = this.#genMoveOutNode();
       this.#$folderList.insertAdjacentHTML('beforeend', dom);
 
       for(let i=0; i<folders.length; i++) {
@@ -45,8 +45,8 @@ class FolderListDialog extends HTMLElement {
       }
     }
 
-    for(let i=0; i<folders.length; i++) {
-      let dom = this.#genListNode(folders[i]);
+    for(const folder of folders) {
+      const dom = this.#genFolderNode(folder);
       this.#$folderList.insertAdjacentHTML('beforeend', dom);
     }
   }
@@ -59,7 +59,7 @@ class FolderListDialog extends HTMLElement {
       + '</li>';
   }
 
-  #genListNode(folder) {
+  #genFolderNode(folder) {
     return ''
       + `<li data-id="${folder.id}">`
         + '<img class="icon" src="./src/com/folder/folder.svg">'
