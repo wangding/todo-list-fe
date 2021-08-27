@@ -20,23 +20,11 @@ function handleEvent() {
   });
 
   $folder.addEventListener('loadItems', (e) => {
-    const menuWithData = {
-      'menu-all-tasks': data.tasks,
-      'menu-no-class' : data.noClassTasks,
-      'menu-trash'    : data.removedTasks,
-      'menu-finding'  : data.searchedTasks
-    };
-
-    let tasks = null;
-    if(e.detail.menu === 'x-folder') {
-      tasks = data.getTasksByFolder(e.detail.id);
-    } else {
-      tasks = menuWithData[e.detail.menu];
-    }
-
+    const { menu, id } = e.detail;
+    let tasks = data.getTasksByMenu(menu, id);
     const taskId = (tasks.length === 0) ? 0 : tasks[0].id;
 
-    $items.show(tasks);
+    $items.show(tasks, `${e.detail.menu}:${e.detail.id}`);
     $editor.show(taskId);
   });
 

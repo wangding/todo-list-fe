@@ -11,27 +11,30 @@ class Editor extends HTMLElement {
   }
 
   show(taskId) {
-    this.#showToolbar(taskId !== 0);
+    this.#showUI(taskId !== 0);
     if(taskId === 0) return;
 
+    /*
     if(this.#curTaskId === 0) { // 第一次载入内容
       this.#$editor.value = data.getTaskById(Number(taskId));
     } else {
       if(this.#curTaskId !== taskId) { // 第二次载入内容了，而且和之前载入的内容不同
         if(this.#$editor.value !== data.getTaskById(this.#curTaskId)) {
           // 之前的内容确实有了变更才需要保存
-          data.updateTaskById(this.#curTaskId, this.#$editor.value);
+          data.changeTaskContent(this.#curTaskId, this.#$editor.value);
         }
         // load new content
         this.#$editor.value = data.getTaskById(taskId);
       }
     }
-
+    */
+    this.#$editor.value = data.getTaskById(Number(taskId)).content;
     this.#curTaskId = taskId;
   }
 
-  #showToolbar(yesOrNo) {
+  #showUI(yesOrNo) {
     this.#$toolbar.className = yesOrNo ? 'toolbar' : 'toolbar hide';
+    this.#$editor.className = yesOrNo ? 'editor' : 'editor hide';
   }
 
   #$editor = null;

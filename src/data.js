@@ -76,6 +76,24 @@ class Data {
     return res;
   }
 
+  getTasksByMenu(menu, id) {
+    const menuWithData = {
+      'menu-all-tasks': this.tasks,
+      'menu-no-class' : this.noClassTasks,
+      'menu-trash'    : this.removedTasks,
+      'menu-finding'  : this.searchedTasks
+    };
+
+    let tasks = null;
+    if(menu === 'x-folder') {
+      tasks = this.getTasksByFolder(id);
+    } else {
+      tasks = menuWithData[menu];
+    }
+
+    return tasks;
+  }
+
   searchTasks(content) {
     const tasks = this.tasks,
           res   = [];

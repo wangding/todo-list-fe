@@ -33,7 +33,7 @@ class FolderListDialog extends HTMLElement {
           fClass = folder[0],
           folderId = Number(folder[1]);
 
-    if(fClass === 'xFolder') {
+    if(fClass === 'x-folder') {
       const dom = this.#genMoveOutNode();
       this.#$folderList.insertAdjacentHTML('beforeend', dom);
 

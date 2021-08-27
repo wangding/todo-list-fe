@@ -7,6 +7,7 @@ class Toolbar extends HTMLElement {
     this.#$count = this.$('span.count');
 
     this.$('img.exit').onclick = () => {
+      this.show(false);
       const evt = new CustomEvent('exit', { bubbles: true });
       this.dispatchEvent(evt);
     };
@@ -29,6 +30,10 @@ class Toolbar extends HTMLElement {
 
   setCount(num) {
     this.#$count.innerHTML = num;
+  }
+
+  get isHide() {
+    return this.className === 'hide';
   }
 
   #$count = null;

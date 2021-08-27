@@ -1,3 +1,4 @@
+import { dateFormat } from '../../lib.js';
 import data from '../../data.js';
 import Toolbar from '../toolbar/toolbar.js';
 import FolderListDialog from '../folder-list-dlg/folder-list-dlg.js';
@@ -13,6 +14,7 @@ class Items extends HTMLElement {
       // 可能会出现重复注册 web component 的错误
       // 直接忽略，确保程序不抛出异常，而停止执行
     }
+
     this.$ = this.querySelector;
     this.innerHTML = this.#html;
 
@@ -20,43 +22,48 @@ class Items extends HTMLElement {
     this.#$items = this.$('ul.items');
     this.#$selectAll = this.$('.select-all');
     this.#$toolbar = this.$('tool-bar');
+    this.#$orderby = this.$('.orderby');
 
     this.#$toolbar.addEventListener('exit', () => {
-      this.#$selectAll.click();
+      this.#resetSelectorState();
     });
 
     this.#$toolbar.addEventListener('move', () => {
       this.insertAdjacentHTML('beforeend', `<folder-list-dialog data-folderid="${this.#curFolder}"></folder-list-dialog>`);
       const dialog = this.querySelector('folder-list-dialog');
       dialog.addEventListener('select', async (e) => {
+        // operate data
         const dstFolderId = e.detail.folderId;
-
         for(let i=0; i<this.#$itemSelectors.length; i++) {
           const item = this.#$itemSelectors[i],
                 srcFolderId = item.parentNode.dataset.folderid,
                 taskId = item.parentNode.dataset.id;
 
           if(item.checked && srcFolderId !== dstFolderId) {
-            await data.changeFolder(Number(taskId), Number(dstFolderId));
+            await data.changeTaskFolder(Number(taskId), Number(dstFolderId));
           }
         }
-        //this.show(tasks, this.#curFolder);
+
         this.#$toolbar.show(false);
+        this.#resetSelectorState();
+        this.#reloadView();
       });
     });
 
-    this.#$toolbar.addEventListener('delete', () => {
-      const deleteOrNot = confirm('确定要删除选中的待办事项吗？');
+    this.#$toolbar.addEventListener('delete', async () => {
+      const delOrNot = confirm('确定要删除选中的待办事项吗？');
       if(delOrNot) {
         this.#$toolbar.show(false);
 
-        for(let i=0; i<this.#$itemSelectors.length; i++) {
-          const item = this.#$itemSelectors[i],
-                taskId = item.parentNode.dataset.id;
-
-          //await data.deleteTask(Number(taskId));
-          // items list also reflect
+        for(const item of this.#$itemSelectors) {
+          if(item.checked) {
+            const taskId = item.parentNode.dataset.id;
+            await data.deleteTask(Number(taskId));
           }
+        }
+
+        this.#resetSelectorState();
+        this.#reloadView();
         }
     });
 
@@ -72,15 +79,13 @@ class Items extends HTMLElement {
       this.#$toolbar.show(this.#$selectAll.checked, this.#$count.innerHTML);
     }
 
-    this.#$itemSelectors.forEach( $item => {
-      $item.onclick = (e) => {
-        e.stopPropagation();
-        console.log($item.checked);
-      }
-    });
-
     this.#$items.onclick = (e) => {
       const target = e.target;
+      if(target.nodeName === 'INPUT') {
+        this.#checkboxOnClick(target);
+        return;
+      }
+
       target.className = "active";
       this.#setItemActive(target);
 
@@ -91,9 +96,20 @@ class Items extends HTMLElement {
 
       this.dispatchEvent(evt);
     }
+
+    this.#$orderby.onchange = () => {
+      this.show(this.#tasks);
+    }
   }
 
   show(tasks, curFolder) {
+    tasks.sort((t1, t2) => {
+      const v1 = (new Date(t1[this.#$orderby.value])).getTime(),
+            v2 = (new Date(t2[this.#$orderby.value])).getTime();
+
+      return v2-v1;
+    });
+
     this.#tasks = tasks;
     this.#$count.innerHTML = tasks.length;
     this.#$items.innerHTML = '';
@@ -111,6 +127,10 @@ class Items extends HTMLElement {
     }
   }
 
+  test() {
+    console.log(this.#curFolder);
+  }
+
   #curFolder = '';
   #tasks = null;
   #$count = null;
@@ -119,6 +139,7 @@ class Items extends HTMLElement {
   #$itemSelectors = [];
   #$selectAll = null;
   #$toolbar = null;
+  #$orderby = null;
 
   #genItemDom(task) {
     const lines = task.content.split('\n');
@@ -128,8 +149,55 @@ class Items extends HTMLElement {
         + '<input type="checkbox" class="select-item hide">'
         + `<p class="preview1">${lines[0]}</p>`
         + `<p class="preview2">${typeof lines[1] === 'undefined' ? ' ' : lines[i]}</p>`
-        + '<p class="update-time">8月4日 14:20</p>'
+        + `<p class="date-time">${dateFormat(task[this.#$orderby.value])}</p>`
       + '</li>';
+  }
+
+  #checkboxOnClick(target) {
+    target.className = target.checked ? 'select-item' : 'select-item hide';
+    const num = this.#getCheckedNum();
+    if(num > 0) {
+      if(this.#$toolbar.isHide) {
+        this.#$toolbar.show(true, num);
+      } else {
+        this.#$toolbar.setCount(num);
+      }
+
+      if(num === this.#$itemSelectors.length) {
+        this.#$selectAll.checked = true;
+        this.#$selectAll.className = 'select-all';
+      }
+    } else { // num === 0
+      this.#$toolbar.show(false);
+      this.#$selectAll.checked = false;
+      this.#$selectAll.className = 'select-all hide';
+    }
+  }
+
+  #getCheckedNum() {
+    let num = 0;
+    for(const selector of this.#$itemSelectors) {
+      if(selector.checked) num++;
+    }
+    return num;
+  }
+
+  #resetSelectorState() {
+    if(this.#$selectAll.checked) {
+      this.#$selectAll.click();
+    } else {
+      for(const selector of this.#$itemSelectors) {
+        if(selector.checked) selector.click();
+      }
+    }
+  }
+
+  #reloadView() {
+    const msg  = this.#curFolder.split(':'),
+          menu = msg[0],
+          id   = msg[1];
+    let tasks = data.getTasksByMenu(menu, id);
+    this.show(tasks, `${menu}:${id}`);
   }
 
   #showAllSelectors() {
@@ -148,7 +216,6 @@ class Items extends HTMLElement {
     }
 
     item.className = 'active';
-
     this.#$currentItem = item;
   }
 
@@ -158,8 +225,8 @@ class Items extends HTMLElement {
       + '<input type="checkbox" class="select-all hide">'
       + '<label>排序：'
       + '<select class="orderby">'
-        + '<option value="按编辑时间" selected>按编辑时间</option>'
-        + '<option value="按创建时间">按创建时间</option>'
+        + '<option value="updatedTime" selected>按编辑时间</option>'
+        + '<option value="createdTime">按创建时间</option>'
       + '</select></label>'
     + '</div>'
     + '<ul class="items">'

@@ -72,7 +72,7 @@ ul.items li p {
   pointer-events: none;
 }
 
-p.update-time {
+p.date-time {
   font-size: 8px;
   cursor: pointer;
 }
