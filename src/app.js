@@ -8,7 +8,6 @@ import Editor from './com/editor/editor.js';
 
 import handleEvent from './event-handlers.js';
 import data from './data.js';
-import { baseUrl } from './config.js';
 
 const q = document.querySelector,
       $ = q.bind(document);
@@ -19,13 +18,7 @@ const app = {};
 
 async function isLogin() {
   if(data.jwt === null) return false;
-
-  // 判断 jwt 是否过期
-  const res = await axios.get(baseUrl + '/tasks', {
-    headers: { 'Authorization': 'Bearer '+ data.jwt }
-  });
-
-  return (res.data.code === 0);
+  return await data.isJwtExpired();
 }
 
 function showLogin() {
@@ -34,14 +27,11 @@ function showLogin() {
     const email = e.detail.email,
           password = e.detail.password;
 
-    let rs = await axios.post(baseUrl + '/users/login', { email, password });
-    rs = rs.data;
-
-    if(rs.code !== 0) { // login sucess
-      alert(rs.msg);
-    } else { // login fail
-      await data.init(rs.data, email);
+    try {
+      await data.login(email, password);
       location.hash = '#/home';
+    } catch(e) {
+      alert(e.message);
     }
   });
 }
@@ -52,14 +42,12 @@ function showSignup() {
     const email    = e.detail.email,
           password = e.detail.password;
 
-    let rs = await axios.post(baseUrl + '/users/signup', { email, password });
-    rs = rs.data;
-
-    if(rs.code !== 0) { // signup fail
-      alert(rs.msg);
-    } else { // signup sucess
+    try {
+      await data.signup(email, password);
       alert('注册成功，点击"确定"按钮，进入登录页面！')
       location.hash = '#/login';
+    } catch(e) {
+      alert(e.message);
     }
   });
 }

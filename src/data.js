@@ -1,25 +1,38 @@
-import { baseUrl } from './config.js'
+const baseUrl = 'http://192.168.174.133:8080/api';
 
 class Data {
   constructor() {}
 
-  async init(jwt, email) {
-    localStorage.setItem('jwt', jwt);
-    localStorage.setItem('email', email);
+  async login(email, password) {
+    let rs = await axios.post(baseUrl + '/users/login', { email, password });
+    rs = rs.data;
 
-    let res = await axios.get(baseUrl + '/tasks', {
+    if(rs.code === 0) { // login sucess
+      await this.#init(rs.data, email);
+    } else {
+      throw new Error(rs.msg);
+    }
+  }
+
+  async signup(email, password) {
+    let rs = await axios.post(baseUrl + '/users/signup', { email, password });
+    rs = rs.data;
+
+    if(rs.code !== 0) { // signup fail
+      throw new Error(rs.msg);
+    }
+  }
+
+  clear() {
+    localStorage.clear();
+  }
+
+  async isJwtExpired() {
+    const res = await axios.get(baseUrl + '/folders', {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
-    res = this.#arryToKeyValue(res.data.data);
-    localStorage.setItem('tasks', JSON.stringify(res));
-
-    res = await axios.get(baseUrl + '/folders', {
-      headers: { 'Authorization': 'Bearer '+ data.jwt }
-    });
-
-    res = this.#arryToKeyValue(res.data.data);
-    localStorage.setItem('folders', JSON.stringify(res));
+    return (res.data.code === 0);
   }
 
   get jwt() {
@@ -58,6 +71,11 @@ class Data {
     return res;
   }
 
+  get searchedTasks() {
+    const res = JSON.parse(localStorage.getItem('searched'));
+    return res;
+  }
+
   searchTasks(content) {
     const tasks = this.tasks,
           res   = [];
@@ -66,15 +84,6 @@ class Data {
     }
     localStorage.setItem('searched', JSON.stringify(res));
     return res;
-  }
-
-  get searchedTasks() {
-    const res = JSON.parse(localStorage.getItem('searched'));
-    return res;
-  }
-
-  get folders() {
-    return this.#keyValueToArr(JSON.parse(localStorage.getItem('folders')));
   }
 
   getTasksByFolder(id) {
@@ -88,6 +97,73 @@ class Data {
 
   getTaskById(taskId) {
     return this.#rowTasks()[taskId];
+  }
+
+  async addTask(content, folderId) {
+    if(typeof folderId === 'undefined') folderId = null;
+
+    const res = await axios.post(baseUrl + `/tasks/`, {
+      content, folderId
+    }, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    const id = res.data.data,
+          tasks = this.#rowTasks();
+    tasks[id] = {
+      id: id,
+      content: content,
+      folder_id: (typeof folderId === 'undefined') ? null : folderId,
+      createdTime: (new Date()).toISOString(),
+      updatedTime: (new Date()).toISOString(),
+      deletedTime: null
+    };
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  async deleteTask(id) {
+    await axios.delete(baseUrl + `/tasks/${id}`, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    let tasks = this.#rowTasks();
+    tasks[id].deletedTime = (new Date()).toISOString();
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  async changeTaskContent(taskId, content) {
+    await axios.put(baseUrl + `/tasks/${taskId}`, { content }, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    let tasks = this.#rowTasks();
+    tasks[taskId].content = content;
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  async changeTaskFolder(taskId, folderId) {
+    await axios.put(baseUrl + `/tasks/${taskId}`, { folderId }, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    let tasks = this.#rowTasks();
+    tasks[taskId].folder_id = (folderId === 0) ? null : folderId;
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  async recycleTask(taskId) {
+    const recycle = true;
+    await axios.put(baseUrl + `/tasks/${taskId}`, { recycle }, {
+      headers: { 'Authorization': 'Bearer '+ data.jwt }
+    });
+
+    let tasks = this.#rowTasks();
+    tasks[taskId].deletedTime = null;
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  get folders() {
+    return this.#keyValueToArr(JSON.parse(localStorage.getItem('folders')));
   }
 
   async addFolder(name) {
@@ -147,60 +223,23 @@ class Data {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }
 
-  async deleteTask(id) {
-    await axios.delete(baseUrl + `/tasks/${id}`, {
+  async #init(jwt, email) {
+    localStorage.setItem('jwt', jwt);
+    localStorage.setItem('email', email);
+
+    let res = await axios.get(baseUrl + '/tasks', {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
-    let tasks = this.#rowTasks();
-    tasks[id].deletedTime = (new Date()).toISOString();
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }
+    res = this.#arryToKeyValue(res.data.data);
+    localStorage.setItem('tasks', JSON.stringify(res));
 
-  async addTask(content, folderId) {
-    if(typeof folderId === 'undefined') folderId = null;
-
-    const res = await axios.post(baseUrl + `/tasks/`, {
-      content, folderId
-    }, {
+    res = await axios.get(baseUrl + '/folders', {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
-    const id = res.data.data,
-          tasks = this.#rowTasks();
-    tasks[id] = {
-      id: id,
-      content: content,
-      folder_id: (typeof folderId === 'undefined') ? null : folderId,
-      createdTime: (new Date()).toISOString(),
-      updatedTime: (new Date()).toISOString(),
-      deletedTime: null
-    };
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }
-
-  async updateTaskById(taskId, content) {
-    await axios.put(baseUrl + `/tasks/${taskId}`, { content }, {
-      headers: { 'Authorization': 'Bearer '+ data.jwt }
-    });
-
-    let tasks = this.#rowTasks();
-    tasks[taskId].content = content;
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }
-
-  async changeFolder(taskId, folderId) {
-    await axios.put(baseUrl + `/tasks/${taskId}`, { folderId }, {
-      headers: { 'Authorization': 'Bearer '+ data.jwt }
-    });
-
-    let tasks = this.#rowTasks();
-    tasks[taskId].folder_id = (folderId === 0) ? null : folderId;
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }
-
-  clear() {
-    localStorage.clear();
+    res = this.#arryToKeyValue(res.data.data);
+    localStorage.setItem('folders', JSON.stringify(res));
   }
 
   #arryToKeyValue(arr) {
