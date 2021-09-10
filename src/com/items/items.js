@@ -30,7 +30,7 @@ class Items extends HTMLElement {
 
     this.#$toolbar.addEventListener('move', () => {
       this.insertAdjacentHTML('beforeend', `<folder-list-dialog data-folderid="${this.#curFolder}"></folder-list-dialog>`);
-      const dialog = this.querySelector('folder-list-dialog');
+      const dialog = this.$('folder-list-dialog');
       dialog.addEventListener('select', async (e) => {
         // operate data
         const dstFolderId = e.detail.folderId;
@@ -67,6 +67,37 @@ class Items extends HTMLElement {
         }
     });
 
+    this.#$toolbar.addEventListener('recycle', async () => {
+      this.#$toolbar.show(false);
+
+      for(const item of this.#$itemSelectors) {
+        if(item.checked) {
+          const taskId = item.parentNode.dataset.id;
+          await data.recycleTask(Number(taskId));
+        }
+      }
+
+      this.#resetSelectorState();
+      this.#reloadView();
+    });
+
+    this.#$toolbar.addEventListener('del-permanent', async () => {
+      const delOrNot = confirm('确定要删除选中的待办事项吗？');
+      if(delOrNot) {
+        this.#$toolbar.show(false);
+
+        for(const item of this.#$itemSelectors) {
+          if(item.checked) {
+            const taskId = item.parentNode.dataset.id;
+            await data.deleteTask(Number(taskId), true);
+          }
+        }
+
+        this.#resetSelectorState();
+        this.#reloadView();
+        }
+    });
+
     this.#$selectAll.onclick = (e) => {
       e.stopPropagation();
 
@@ -76,7 +107,9 @@ class Items extends HTMLElement {
       }
 
       this.#showAllSelectors();
-      this.#$toolbar.show(this.#$selectAll.checked, this.#$count.innerHTML);
+      const type = Number(this.#curFolder.split(':')[0] === 'menu-trash');
+      console.log(type);
+      this.#$toolbar.show(this.#$selectAll.checked, this.#$count.innerHTML, type);
     }
 
     this.#$items.onclick = (e) => {
@@ -116,6 +149,11 @@ class Items extends HTMLElement {
     this.#$itemSelectors = [];
     this.#curFolder = curFolder;
 
+    if(!this.#$toolbar.isHide) {
+      this.#$toolbar.show(false);
+      this.#resetSelectorState();
+    }
+
     for(let i=0; i<tasks.length; i++) {
       this.#$items.insertAdjacentHTML('beforeend', this.#genItemDom(tasks[i]));
     }
@@ -128,7 +166,7 @@ class Items extends HTMLElement {
   }
 
   test() {
-    console.log(this.#curFolder);
+    console.log(this.#curFolder.split(':')[0] === 'menu-trash');
   }
 
   #curFolder = '';
@@ -156,9 +194,10 @@ class Items extends HTMLElement {
   #checkboxOnClick(target) {
     target.className = target.checked ? 'select-item' : 'select-item hide';
     const num = this.#getCheckedNum();
+    const type = Number(this.#curFolder.split(':')[0] === 'menu-trash');
     if(num > 0) {
       if(this.#$toolbar.isHide) {
-        this.#$toolbar.show(true, num);
+        this.#$toolbar.show(true, num, type);
       } else {
         this.#$toolbar.setCount(num);
       }

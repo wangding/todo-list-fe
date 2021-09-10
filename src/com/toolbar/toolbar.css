@@ -26,18 +26,22 @@ tool-bar img.exit {
   margin-left: 40px;
 }
 
-tool-bar img.move {
+tool-bar img.move,
+tool-bar img.recycle {
   position: absolute;
   right: 200px;
 }
 
-tool-bar img.delete {
+tool-bar img.delete,
+tool-bar img.del-permanent {
   position: absolute;
   right: 80px;
 }
 
 tool-bar img.move:hover ~ span.move,
 tool-bar img.exit:hover ~ span.exit,
+tool-bar img.recycle:hover ~ span.recycle,
+tool-bar img.del-permanent:hover ~ span.del-permanent,
 tool-bar img.delete:hover ~ span.delete {
   display: block;
 }
@@ -53,7 +57,8 @@ tool-bar span.tooltip {
   top: 45px;
 }
 
-tool-bar span.move {
+tool-bar span.move,
+tool-bar span.recycle {
   right: 165px;
 }
 
@@ -61,3 +66,6 @@ tool-bar span.delete {
   right: 30px;
 }
 
+tool-bar span.del-permanent {
+  right: 60px;
+}

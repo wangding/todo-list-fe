@@ -139,13 +139,18 @@ class Data {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }
 
-  async deleteTask(id) {
-    await axios.delete(baseUrl + `/tasks/${id}`, {
+  async deleteTask(id, permanent=false) {
+    let tasks = this.#rowTasks();
+    await axios.delete(baseUrl + `/tasks/${id}?permanent=${permanent}`, {
       headers: { 'Authorization': 'Bearer '+ data.jwt }
     });
 
-    let tasks = this.#rowTasks();
-    tasks[id].deletedTime = (new Date()).toISOString();
+    if(permanent) {
+      delete tasks[id];
+    } else {
+      tasks[id].deletedTime = (new Date()).toISOString();
+    }
+
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }
 
