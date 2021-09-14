@@ -25,11 +25,14 @@ function handleEvent() {
     const taskId = (tasks.length === 0) ? 0 : tasks[0].id;
 
     $items.show(tasks, `${e.detail.menu}:${e.detail.id}`);
-    $editor.show(taskId);
   });
 
   $items.addEventListener('load', (e) => {
     $editor.show(e.detail.taskId);
+  });
+
+  $editor.addEventListener('modify', () => {
+    $items.reloadView();
   });
 }
 

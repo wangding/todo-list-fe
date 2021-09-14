@@ -46,7 +46,7 @@ class Items extends HTMLElement {
 
         this.#$toolbar.show(false);
         this.#resetSelectorState();
-        this.#reloadView();
+        this.reloadView();
       });
     });
 
@@ -63,7 +63,7 @@ class Items extends HTMLElement {
         }
 
         this.#resetSelectorState();
-        this.#reloadView();
+        this.reloadView();
         }
     });
 
@@ -78,7 +78,7 @@ class Items extends HTMLElement {
       }
 
       this.#resetSelectorState();
-      this.#reloadView();
+      this.reloadView();
     });
 
     this.#$toolbar.addEventListener('del-permanent', async () => {
@@ -94,7 +94,7 @@ class Items extends HTMLElement {
         }
 
         this.#resetSelectorState();
-        this.#reloadView();
+        this.reloadView();
         }
     });
 
@@ -160,13 +160,32 @@ class Items extends HTMLElement {
 
     const $items = this.#$items.querySelectorAll('li');
     if($items.length !== 0) {
+      $items[0].click();
       this.#setItemActive($items[0]);
       this.#$itemSelectors = this.querySelectorAll('.select-item');
+    } else {
+      const evt = new CustomEvent('load', {
+        detail:  { 'taskId': 0 },
+        bubbles: true
+      });
+
+      this.dispatchEvent(evt);
     }
   }
 
+  reloadView() {
+    const msg  = this.#curFolder.split(':'),
+          menu = msg[0],
+          id   = msg[1];
+    let tasks = data.getTasksByMenu(menu, id);
+    const currentItemId = this.#$currentItem.dataset.id;
+    this.show(tasks, `${menu}:${id}`);
+    this.#setItemActive(this.#$items.querySelector(`li[data-id="${currentItemId}"]`));
+  }
+
   test() {
-    console.log(this.#curFolder.split(':')[0] === 'menu-trash');
+    const $items = this.#$items.querySelectorAll('li');
+    console.log($items);
   }
 
   #curFolder = '';
@@ -205,6 +224,9 @@ class Items extends HTMLElement {
       if(num === this.#$itemSelectors.length) {
         this.#$selectAll.checked = true;
         this.#$selectAll.className = 'select-all';
+      } else {
+        this.#$selectAll.checked = false;
+        this.#$selectAll.className = 'select-all hide';
       }
     } else { // num === 0
       this.#$toolbar.show(false);
@@ -229,14 +251,6 @@ class Items extends HTMLElement {
         if(selector.checked) selector.click();
       }
     }
-  }
-
-  #reloadView() {
-    const msg  = this.#curFolder.split(':'),
-          menu = msg[0],
-          id   = msg[1];
-    let tasks = data.getTasksByMenu(menu, id);
-    this.show(tasks, `${menu}:${id}`);
   }
 
   #showAllSelectors() {

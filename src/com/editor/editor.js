@@ -6,40 +6,37 @@ class Editor extends HTMLElement {
 
     this.$ = this.querySelector;
     this.innerHTML = this.#html;
-    this.#$toolbar = this.$('.toolbar');
-    this.#$editor = this.$('textarea.editor');
   }
 
-  show(taskId) {
+  async show(taskId) {
+    if(this.#isModified) this.#content = this.$('textarea').value;
     this.#showUI(taskId !== 0);
-    if(taskId === 0) return;
-
-    /*
-    if(this.#curTaskId === 0) { // 第一次载入内容
-      this.#$editor.value = data.getTaskById(Number(taskId));
-    } else {
-      if(this.#curTaskId !== taskId) { // 第二次载入内容了，而且和之前载入的内容不同
-        if(this.#$editor.value !== data.getTaskById(this.#curTaskId)) {
-          // 之前的内容确实有了变更才需要保存
-          data.changeTaskContent(this.#curTaskId, this.#$editor.value);
-        }
-        // load new content
-        this.#$editor.value = data.getTaskById(taskId);
-      }
+    if(taskId === 0 || taskId === this.#curTaskId) return;
+    if(this.#isModified) {
+      await data.changeTaskContent(this.#curTaskId, this.#content);
+      const evt = new CustomEvent('modify', { bubbles: true });
+      this.dispatchEvent(evt);
+      this.#isModified = false;
     }
-    */
-    this.#$editor.value = data.getTaskById(Number(taskId)).content;
     this.#curTaskId = taskId;
+
+    const content = data.getTaskById(Number(taskId)).content;
+    this.$('textarea').value = content;
+    this.$('textarea').onkeydown = () => {
+      if(this.$('textarea').value !== content) {
+        this.#isModified = true;
+      }
+    };
   }
 
   #showUI(yesOrNo) {
-    this.#$toolbar.className = yesOrNo ? 'toolbar' : 'toolbar hide';
-    this.#$editor.className = yesOrNo ? 'editor' : 'editor hide';
+    this.innerHTML = yesOrNo ? this.#html : '';
+    if(yesOrNo) this.$('textarea').value = this.#content;
   }
 
-  #$editor = null;
+  #isModified = false;
+  #content = '';
   #curTaskId = 0;
-  #$toolbar = null;
   #html = ''
     + '<div class="toolbar">'
       + '<img class="delete icon" src="./src/com/folder/trash.svg">'
